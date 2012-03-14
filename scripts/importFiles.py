@@ -64,6 +64,12 @@ class UseMod2SFW :
         return self.page.__str__()
             
 if __name__ == '__main__' :
+    # Use like this : 
+    # python importFiles.py page1 page2 page3 etc.
+    # where page1 page2 page3 are plain-text files exported from your wiki
+    # NOTE: you must have an "output" subdirectory of the directory where you run 
+    # this script, as that's where it will write output 
+   
     for v in sys.argv[1:] :
         try :
             conv = UseMod2SFW(v)

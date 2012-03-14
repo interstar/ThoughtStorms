@@ -25,7 +25,7 @@ Why Smallest Federated Wiki?
 
 * The emphasis on making "federation" easy solves dilemmas like : I'd like to keep some personal information privately in my local wiki but also use a public wiki as a publishing medium. In a sense it seems that SFW is bringing git-like distributed thinking to wiki
 
-* Federation helps resolve the tension between running my own wiki and contribute to a group production. 
+* Federation helps resolve the tension between running my own wiki and contributing to a group production. 
 
 * It further resolves similar questions about throwing everything into one wiki or making special-purpose wikis around particular topics.
 
