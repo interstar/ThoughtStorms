@@ -8,9 +8,12 @@ My Motivation
 
 * I want to update and refresh my personal wiki, ThoughtStorms, which currently resides at http://www.nooranch.com/synaesmedia/wiki/wiki.cgi .
 
-* I want to have a wiki with some of the features I prototyped in SdiDesk, a personal wiki-like notebook I wrote for Windows back in the mid-noughties. 
+* I want to have a wiki with some of the features I prototyped in SdiDesk, a personal wiki-like notebook I wrote for Windows back in the mid-noughties. ( http://code.google.com/p/sdidesk/ )
 
 * I'm buried under piles of paper notebooks where I scribble my ideas. I need a personal wiki to copy those ideas into so I can throw the notebooks into the recycling.
+
+* I have a couple of other services that would make more sense as features embeddable in wiki / dashboard like things.
+
 
 Why Smallest Federated Wiki?
 ----------------------------
@@ -30,17 +33,22 @@ Why Smallest Federated Wiki?
 * It further resolves similar questions about throwing everything into one wiki or making special-purpose wikis around particular topics.
 
 
-(Rough) Road Map
-----------------
+What's Here?
+------------
 
-* A plugin type for "Wikish", the UseMod derived markup language I use in SdiDesk. 
+* The beginnings of a plugin type for "Wikish", the UseMod derived markup language I use in SdiDesk. 
 
-* Scripts to convert pages from UseMod and SdiDesk into SFW's json format.
+* The beginnings of a script to convert pages from flat text files (I've exported mine from UseMod) into SFW's json format
 
-* Plugins for other types featured in SdiDesk
-
-
+* A Vagrantfile and install.sh script that lets me set up SFW (the node.js / CoffeeScript server) in a Vagrant / VirtualBox on my local machine
 
 
- 
+A (Rough) Road Map
+------------------
+
+* Make sure Wikish covers the most important parts of the UseMod / SdiDesk markup language
+
+* More plugins for the other interesting bits of SdiDesk
+
+* Some other half-baked projects, now imported into SFW
 
