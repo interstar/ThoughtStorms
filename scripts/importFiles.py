@@ -34,17 +34,13 @@ class SfwPage :
     def page(self) :
         return {"title":self.title, "story":self.story, "journal":self.journal}
     
+
+    def removeBlankParas(self) :
+        self.story = [x for x in self.story if re.search('\S',x["text"])]
     
     def __str__(self) :
         return json.dumps(self.page(),ensure_ascii=False)
     
-
-class Build :
-  def __init__(self,s="") : self.build = s
-  def __str__(self) : return self.build
-  def __call__(self,s="") :
-    self.build = self.build+s
-    return self.build
 
 
 def splitter(criteria,page) :
@@ -105,7 +101,7 @@ class UseMod2SFW :
                 print "error %s in %s" % (e, v)
                 pdb.post_mortem()
 
-                
+            self.page.removeBlankParas()
 
     def process(self,s) :
         return self.camelCaseLinks(self.externalLinks(s))
