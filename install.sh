@@ -36,6 +36,5 @@ npm install -g coffee-script
 # Install ThoughtStorms if you want this
 cd /home/vagrant
 git clone git://github.com/interstar/ThoughtStorms.git thoughtstorms
-ln -s thoughtstorms/plugins/wikish.coffee sfw/client/plugins/wikish.coffee
 
 
