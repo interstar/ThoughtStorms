@@ -85,14 +85,14 @@ class @MarkupProcessor
         count = 0
         while l[count] == "*" 
             count=count+1
+        meat = l.substring(count)
+
         if count == @indent
-            meat = l.substring(count)
             return (Array(@indent+1).join(" ")) + "<li>" + @check(meat) + "</li>"
         if count > @indent 
             @indent = @indent + 1
-            meat = l.substring(count)
             return "<ul>\n" + (Array(@indent+1).join(" ")) + "<li>" + @check(meat) + "</li>"
-        s = (Array((1+@indent)-count).join("</ul>"))
+        s = (Array((1+@indent)-count).join("</ul>")) + "<li>" + @check(meat) + "</li>\n" 
         @indent = count
         return s
 
