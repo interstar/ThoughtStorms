@@ -27,7 +27,8 @@ window.plugins.wikish =
     mp = new MarkupProcessor('')
     text = mp.page(item.text)
     text = wiki.resolveLinks(text)
-    div.append text
+    p = $("<p/>").append(text)
+    div.append p
   bind: (div, item) ->
     div.dblclick -> wiki.textEditor div, item
 

@@ -6,6 +6,7 @@ import sys
 import pdb
 
 class SfwPage :
+    # Represents a Smallest Federated Wiki Page
     def __init__(self,title) :
         if '/' in title : title=(title.split('/'))[-1]
         self.title = title
@@ -93,7 +94,13 @@ class UseMod2SFW :
             build = u""
             try :
                 for block in (splitter(outlineSplitterFactory(),s)) :
-                    self.page.addPara(self.process(block),"wikish")
+                    if '\n\n' in block :
+                        blocks = block.split('\n\n')
+                    else :
+                        blocks = [block]
+                    for b in blocks :
+                        if b :
+                            self.page.addPara(self.process(b.strip()),"wikish")
             except Exception, e:
                 print "error %s in %s" % (e, v)
                 pdb.post_mortem()
