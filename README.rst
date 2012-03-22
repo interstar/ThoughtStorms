@@ -50,5 +50,11 @@ A (Rough) Road Map
 
 * More plugins for the other interesting bits of SdiDesk
 
+* Usable SdiDesk importer
+
+* A "gateway" that can wrap UseMod / OddMuse wikis so that they look like SFW. (They'll be static, but it will be possible to drag paragraphs from them into SFW)
+
+* Me sorting myself out with private and public servers.
+
 * Some other half-baked projects, now imported into SFW
 
