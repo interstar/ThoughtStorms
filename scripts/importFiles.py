@@ -57,51 +57,54 @@ def splitter(criteria,page) :
     yield l
 
 
+def outlineSplitterFactory() :
+    osFlag = [False]
+    def g(chunk,i) :
+        if i == len(chunk)-1 : return False
+        if (chunk[i]=='\n') :
+            if (osFlag[0]) :
+                if (chunk[i+1]=='*') :
+                    osFlag[0] = False       
+                    return True
+                else :
+                    if (chunk[i+1]=='\n') :
+                        return True
+            else :
+                if (chunk[i+1]!='*') :
+                    osFlag[0] = True
+                    return True
+        return False
+    return g
 
 class UseMod2SFW :
     def __init__(self, fName) :
 
-        self.page = SfwPage(fName)
-        
+        self.addPage(fName)
+                
         with open(fName) as f :
             s = f.read()
             s = s.decode("Latin1","replace")
             # remove \r
             s = s.replace('\r','\n')
-            
-            #lines = s.split('\n')
+            self.parseBody(s)
 
-            def outlineSplitterFactory() :
-                osFlag = [False]
-                def g(chunk,i) :
-                    if i == len(chunk)-1 : return False
-                    if (chunk[i]=='\n') :
-                        if (osFlag[0]) :
-                            if (chunk[i+1]=='*') :
-                                osFlag[0] = False       
-                                return True
-                        else :
-                            if (chunk[i+1]!='*') :
-                                osFlag[0] = True
-                                return True
-                    return False
-                return g
+    def addPage(fName) :
+        """ We can override this in subclasses"""
+        self.page = SfwPage(fName)
+    
 
-            build = u""
-            try :
-                for block in (splitter(outlineSplitterFactory(),s)) :
-                    if '\n\n' in block :
-                        blocks = block.split('\n\n')
-                    else :
-                        blocks = [block]
-                    for b in blocks :
-                        if b :
-                            self.page.addPara(self.process(b.strip()),"wikish")
-            except Exception, e:
-                print "error %s in %s" % (e, v)
-                pdb.post_mortem()
+    def parseBody(self,s) :
+        build = u""
+        try :
+            for block in (splitter(outlineSplitterFactory(),s)) :                    
+                if block :
+                    self.page.addPara(self.process(block.strip()),"wikish")
+        except Exception, e:
+            print "error %s in %s" % (e, v)
+            pdb.post_mortem()
 
-            self.page.removeBlankParas()
+        self.page.removeBlankParas()
+    
 
     def process(self,s) :
         return self.camelCaseLinks(self.externalLinks(s))
@@ -119,6 +122,39 @@ class UseMod2SFW :
     
     def __str__(self) :              
         return self.page.__str__()
+        
+    def makeFileName(self) :
+        return self.page.title.lower()
+            
+
+class SdiDesk2SFW (UseMod2SFW):
+    """ Almost like UseMod but has to strip first couple of lines"""
+
+    def addPage(self,fName) :
+        """ We can override this in subclasses"""
+        fName = fName.split('.')[0]
+        self.page = SfwPage(fName)
+
+    def parseBody(self,s) :
+        build = u""
+            
+        try :
+            count = 0
+            for block in (splitter(outlineSplitterFactory(),s)) :
+                if count < 5 :
+                    count=count+1
+                    continue
+                print block
+                if block :
+                    self.page.addPara(self.process(block.strip()),"wikish")
+        except Exception, e:
+            print "error %s in %s" % (e, v)
+            pdb.post_mortem()
+
+        self.page.removeBlankParas()
+
+
+
             
 if __name__ == '__main__' :
     # Use like this : 
@@ -129,9 +165,10 @@ if __name__ == '__main__' :
    
     for v in sys.argv[1:] :
         try :
-            conv = UseMod2SFW(v)
+            #conv = UseMod2SFW(v)
+            conv = SdiDesk2SFW(v)
             x = u"%s" % conv
-            f = open('output/%s'%(conv.page.title.lower()),'w')
+            f = open('output/%s'%(conv.makeFileName()),'w')
             f.write(x)
             f.close()
         except Exception, e:
