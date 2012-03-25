@@ -88,7 +88,7 @@ class UseMod2SFW :
             s = s.replace('\r','\n')
             self.parseBody(s)
 
-    def addPage(fName) :
+    def addPage(self,fName) :
         """ We can override this in subclasses"""
         self.page = SfwPage(fName)
     
@@ -131,7 +131,6 @@ class SdiDesk2SFW (UseMod2SFW):
     """ Almost like UseMod but has to strip first couple of lines"""
 
     def addPage(self,fName) :
-        """ We can override this in subclasses"""
         fName = fName.split('.')[0]
         self.page = SfwPage(fName)
 
@@ -165,8 +164,8 @@ if __name__ == '__main__' :
    
     for v in sys.argv[1:] :
         try :
-            #conv = UseMod2SFW(v)
-            conv = SdiDesk2SFW(v)
+            conv = UseMod2SFW(v)
+            #conv = SdiDesk2SFW(v)
             x = u"%s" % conv
             f = open('output/%s'%(conv.makeFileName()),'w')
             f.write(x)
