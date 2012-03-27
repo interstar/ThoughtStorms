@@ -6,7 +6,7 @@ Project ThoughtStorms is an umbrella to pull together and refresh a number of th
 My Motivation
 -------------
 
-* I want to update and refresh my personal wiki, ThoughtStorms, which currently resides at http://www.nooranch.com/synaesmedia/wiki/wiki.cgi .
+* I want to update and refresh my personal wiki, ThoughtStorms. This has now been ported to SFW ( http://thoughtstorms.info/ )
 
 * I want to have a wiki with some of the features I prototyped in SdiDesk, a personal wiki-like notebook I wrote for Windows back in the mid-noughties. ( http://code.google.com/p/sdidesk/ )
 
