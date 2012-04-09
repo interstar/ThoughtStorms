@@ -25,16 +25,24 @@ sudo make install
 
 # Install Smallest Federated Wiki
 cd /home/vagrant
-git clone https://github.com/WardCunningham/Smallest-Federated-Wiki.git sfw
+# Warning, now from my fork
+#git clone https://github.com/WardCunningham/Smallest-Federated-Wiki.git sfw
+git clone git://github.com/interstar/Smallest-Federated-Wiki.git sfw
 
-cd sfw/server/express
+cd /home/vagrant/sfw/server/express
 npm install
 
 # Install CoffeeScript
 npm install -g coffee-script
 
+cd /home/vagrant/sfw
+sudo git checkout thoughtstorms
+
+cd /home/vagrant/sfw/client/plugins
+sudo coffee -c /home/vagrant/sfw/client/plugins/wikish.coffee
+
+
 # Install ThoughtStorms if you want this
 cd /home/vagrant
 git clone git://github.com/interstar/ThoughtStorms.git thoughtstorms
-
-
+    
