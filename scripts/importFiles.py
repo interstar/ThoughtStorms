@@ -138,12 +138,17 @@ class SdiDesk2SFW (UseMod2SFW):
         build = u""
             
         try :
-            count = 0
-            for block in (splitter(outlineSplitterFactory(),s)) :
-                if count < 5 :
-                    count=count+1
-                    continue
-                print block
+            blocks = (splitter(outlineSplitterFactory(),s))
+            name = (blocks.next()).strip()            
+            for count in range(4) :
+                s = blocks.next()
+                s=s.strip()
+
+            for block in blocks :
+                block=block.strip()
+                if block == "#Network,, 1" :
+                    return self.networkPage(blocks)
+                
                 if block :
                     self.page.addPara(self.process(block.strip()),"wikish")
         except Exception, e:
@@ -152,9 +157,62 @@ class SdiDesk2SFW (UseMod2SFW):
 
         self.page.removeBlankParas()
 
-
-
+    def networkPage(self,blocks) :
+        lines = '\n'.join((x.strip() for x in blocks))
+        print lines
+        parts = lines.split('----')
+        nodes = parts[0]
+        arcs = parts[1]
+        page = {"type":"sdidesk-network","id":self.page.randomId(), "text":lines}
+        net = {}
+        dNodes = {}
+        id = 0
+        for n in (x.strip() for x in nodes.split("\n")) :
+            if not n : continue
+            ns = n.split(",,")
+            node = {"id" : id, "label":ns[0], "x":int(ns[2]), "y":int(ns[1]), "desc":""}
+            dNodes[id] = node
+            id=id+1
+        net["nodes"] = dNodes
+        lArcs = []
+        count = 0
+        for arc in arcs.split('\n') :
+            if not arc : continue
+            a = [x.strip() for x in arc.split(",,")]
+            def nodeIdFromLabel(label) :
+                for node in dNodes.itervalues() :
+                    if node["label"] == label :
+                        return node["id"]
+                        
+            d = {"from":nodeIdFromLabel(a[0]), "to":nodeIdFromLabel(a[1]), "directional":a[2], "label":a[3]}
+            lArcs.append(d)
+        net["arcs"] = lArcs
+        
+        self.rescale(net)
+        page["net"] = net
+        self.page.story.append(page)
+        
+    def addPara(self,data,type="paragraph") :
+        self.story.append(self.para(data,type))
             
+
+    def rescale(self,network) :
+        maxX = -1
+        maxY = -1
+        x = "x"
+        y = "y"
+        for point in network["nodes"].itervalues() :
+            if point[x] > maxX : maxX = int(point[x])
+            if point[y] > maxY : maxY = int(point[y])
+        maxX = maxX + 10
+        maxY = maxY + 10
+        for point in network["nodes"].itervalues() :
+            point[x] = scale(point[x],0,maxX,0,400)
+            point[y] = scale(point[y],0,maxY,0,600)      
+
+def scale(x,lo1,hi1,lo2,hi2) :
+    return int((float(x-lo1)/float(hi1-lo1) * (hi2-lo2)) + lo2)
+                
 if __name__ == '__main__' :
     # Use like this : 
     # python importFiles.py page1 page2 page3 etc.
@@ -164,8 +222,8 @@ if __name__ == '__main__' :
    
     for v in sys.argv[1:] :
         try :
-            conv = UseMod2SFW(v)
-            #conv = SdiDesk2SFW(v)
+            #conv = UseMod2SFW(v)
+            conv = SdiDesk2SFW(v)
             x = u"%s" % conv
             f = open('output/%s'%(conv.makeFileName()),'w')
             f.write(x)
