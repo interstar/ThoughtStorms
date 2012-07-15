@@ -48,7 +48,7 @@ class @MarkupProcessor
         @bold = /'''([^']*)?'''/g
         @italic = /''([^']*)?''/g
         @wikiword = /([A-Z][a-z]+([A-Z][a-z]+)+)/g
-
+        
         @indent = 0
          
     line:(l) ->
@@ -66,7 +66,6 @@ class @MarkupProcessor
         nl = nl.replace(@h1,"<h1>$1</h1>")
 
         #nl = nl.replace(@wikiword,"<a class='internal' href='/$1.html' data-page-name='$1' title='origin'>$1</a>")
-        
         nl
 
     check:(s) ->
@@ -124,5 +123,19 @@ class @UseModGateway
         
     
         
-    
+class @Transcluder
+    constructor:(url,dict) ->
+        $.ajax url,
+            type: 'GET'
+            dataType: 'html'
+            error: (jqXHR, textStatus, errorThrown) ->
+                #$('body').append "AJAX Error: #{textStatus}"
+                console.log(textStatus)
+                console.log(errorThrown)
+
+            success: (data, textStatus, jqXHR) ->
+                console.log(textStatus)
+                console.log(text)
+                dict["cache"]=text
+
 
