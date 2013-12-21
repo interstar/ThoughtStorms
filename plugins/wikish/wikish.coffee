@@ -49,8 +49,12 @@ class @MarkupProcessor
         @italic = /''([^']*)?''/g
         @wikiword = /([A-Z][a-z]+([A-Z][a-z]+)+)/g
         
-        @indent = 0
-         
+        @doubleComma = /(,,)/g
+        
+        @indent = 0        
+        @tableMode = false
+        @newTable = false
+                 
     line:(l) ->
         nl = l       
         nl = nl.replace(@blm,"<br/>\n")
@@ -65,7 +69,25 @@ class @MarkupProcessor
         nl = nl.replace(@h2,"<h2>$1</h2>")
         nl = nl.replace(@h1,"<h1>$1</h1>")
 
-        #nl = nl.replace(@wikiword,"<a class='internal' href='/$1.html' data-page-name='$1' title='origin'>$1</a>")
+        #nl = nl.replace(@wikiword,"<a class='internal' href='/$1.html' data-page-name='$1' title='origin'>$1</a>")        
+
+        if not @tableMode
+            if nl.match(@doubleComma)
+                @tableMode = true
+                @newTable = true
+        
+        if @tableMode
+            if not nl.match(@doubleComma)
+                nl = nl + "\n</table>"
+                @tableMode = false
+            else
+                nl = nl.replace(@doubleComma,"</td><td>")
+                nl = "<tr><td>"+nl+"</td></tr>"
+
+        if @newTable
+            nl = "<table border=1px;>\n" + nl
+            @newTable = false
+            
         nl
 
     check:(s) ->
