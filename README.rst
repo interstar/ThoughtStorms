@@ -36,11 +36,11 @@ Why Smallest Federated Wiki?
 What's Here?
 ------------
 
-* The beginnings of a plugin type for "Wikish", the UseMod derived markup language I use in SdiDesk. 
-
 * The beginnings of a script to convert pages from flat text files (I've exported mine from UseMod) into SFW's json format
 
 * A Vagrantfile and install.sh script that lets me set up SFW (the node.js / CoffeeScript server) in a Vagrant / VirtualBox on my local machine
+
+* The plugin type for "Wikish", the UseMod derived markup language I use in SdiDesk, has now moved to https://github.com/interstar/wiki-plugin-wikish
 
 
 A (Rough) Road Map
