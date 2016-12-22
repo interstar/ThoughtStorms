@@ -10,8 +10,6 @@ from thoughtstorms.txlib import MarkdownThoughtStorms
 
 chef = MarkdownThoughtStorms()
 
-
-
 wikiname, typecode, port, pages_dir, assets_dir = argv[1],argv[2],argv[3],argv[4],argv[5]
 
 print """Starting Wiki :
@@ -21,8 +19,12 @@ Pages  : %s
 Assets : %s """ % (typecode,port,pages_dir,assets_dir)
 
 bottle.TEMPLATE_PATH.append( assets_dir )
-
 print "Bottle Template Path : %s" % bottle.TEMPLATE_PATH
+if assets_dir[-1] != "/" :
+	assets_dir = assets_dir + "/"
+
+static_root = assets_dir + "static/"
+print "Static Root : %s" % static_root
 
 if typecode == "w" :
 	page_store = WritablePageStore(pages_dir)
@@ -40,7 +42,7 @@ def root() :
 ## Static files
 @get("/static/css/<filepath:re:.*\.css>")
 def css(filepath):
-    return static_file(filepath, root="static/css")
+    return static_file(filepath, root=static_root+"/css")
     
 ## Actions
 @route('/view/<pname>')
