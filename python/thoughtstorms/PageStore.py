@@ -15,7 +15,8 @@ class PageStore :
 	def get(self,pName) :
 		file_name = self.fName(pName.lower())
 		f = open(file_name)
-		return f.read()	
+		return f.read().decode("utf-8")
+	
 
 	def is_writable(self) : return False
 	
