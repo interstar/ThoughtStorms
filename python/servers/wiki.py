@@ -1,11 +1,16 @@
+
+from sys import argv
+
 from bottle import route, run, template, get, post, request, redirect, static_file
 
 import bottle
 
 from thoughtstorms.PageStore import PageStore, WritablePageStore
-from thoughtstorms.txlib import chef
+from thoughtstorms.txlib import MarkdownThoughtStorms
 
-from sys import argv
+chef = MarkdownThoughtStorms()
+
+
 
 wikiname, typecode, port, pages_dir, assets_dir = argv[1],argv[2],argv[3],argv[4],argv[5]
 
