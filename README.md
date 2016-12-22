@@ -1,24 +1,67 @@
-## Project ThoughtStorms
+Project ThoughtStorms encompases the software used to run [ThoughtStorms Wiki](http://thoughtstorms.info), various conversion scripts and plugins which have been used to port it to different wiki-engines during its history, and some other tools to manage personal and public information with a wiki-like philosophy.
 
-Project ThoughtStorms is an umbrella to pull together and refresh a number of things I've worked on over the last 14 or so years. 
+As of 2017, some of these tools are now redundant and continue in the repository for historical continuity. Others are currently in use and under active development.
 
-It contains various code-bases / sub-projects that are related to running [ThoughtStorms wiki](http://thoughtstorms.info) for over a decade.
+#### Overview
 
-ThoughtStorms was started in 2003 by Phil Jones using UseMod wiki. By about 2008 it had gone into a bit of a decline. Partly because spamming had forced me to close it to public contributions. And partly because blogs and other software were getting more compelling. In 2012 I began this project to revive and reanimate ThoughtStorms by porting it to the [SmallestFederatedWiki](https://github.com/WardCunningham/Smallest-Federated-Wiki ) and it contained an SFW plugin for my own custom markup language and other useful conversion scripts.
+##### Wiki Software
 
-In 2016 I had a change of heart and moved ThoughtStorms back to some new very simple, self-written wiki software. For more information see [Leaving the SFW](http://thoughtstorms.info/view/leavingthesfw) This project now contains the code-base for that wiki. And more conversion scripts.
+The new, currently unnamed wiki-engine, is written in Python and lives in a the `python` subdirectory of the Project ThoughtStorms repository.
 
-I have also, in parallel been developing several other wiki-like information managers and other personal information management software such as [SdiDesk](http://code.google.com/p/sdidesk/). Project ThoughtStorms is also the place where I keep the SdiDesk to SFW script (which can be used to then port to the new wiki)
+It is, in turn divided into,
 
-### My Motivation
+ * `python/thoughtstorms` (the libraries used by Project ThoughtStorms)
+ * `python/servers` (a wiki server, written using the minimal [Bottle](http://bottlepy.org/docs/dev/) framework, and associated templates and css.
+ * `python/conversion` (conversion scripts)
+ 
+The current philosphy is that all the useful intelligence ie. classes that understand different formats, and which manage storage of pages etc. are in the `thoughtstorms` subdirectory. The `servers` subdir contains only a minimal UI logic + templates. `conversions` are batch conversion scripts. Both `servers` and `conversions` reference the intelligence int the thoughtstorms directory.
 
-* I want to update and refresh my personal wiki, ThoughtStorms. 
 
-* I want to have a wiki with some of the features I prototyped in SdiDesk.
+##### Running the Wiki
 
-* I'm buried under piles of paper notebooks where I scribble my ideas. I need a personal wiki to copy those ideas into so I can throw the notebooks into the recycling.
+	cd PATH-TO/project-thoughtstorms/ThoughtStorms/python/servers
+	
+	python wiki.py ThoughtStorms w 8090 PATH-TO-PAGES PATH-TO/project-thoughtstorms/ThoughtStorms/python/servers/assets
 
-* I have a couple of other services that would make more sense as features embeddable in wiki / dashboard like things.
+What are the wiki.py options?
 
+    wiki.py wikiname typecode port-number path-to-pages path-to-assets
+    
+The `wikiname` is displayed alongside page-names at the top of each page. (Useful if you are running several wikis at once and need to remember which you are looking at)
+
+The `typecode` selects for the type of PageStore (and the permissions it implies). Currently, typecode 'w' makes the wiki writable by any user. Other typecodes are read-only..
+
+`port-number` determines which port the wiki listens on
+
+`path-to-pages` is path to directory where pages are saved
+
+`path-to-assets` is path to directory where the html template is stored.  
+
+##### Conversions
+
+Use the conversion scripts in the `conversion` directory eg.
+
+**sfw2flat.py** Converts SFW files to flat files (extracts just the current "story" text). 
+
+    PATH-TO/project-thoughtstorms/ThoughtStorms/python/conversion/sfw2flat.py PATH-TO/pages-in-sfw-format/* 
+
+Note that this saves files in the local directory where this is run from, but that the script appends .md on the end of the file-names on the assumption that you will be moving pages to Markdown format.
+
+
+**wikish2md.py** Converts text files that have *Wikish* markup to Markdown. 
+
+    PATH-TO/project-thoughtstorms/ThoughtStorms/python/conversion/wikish2md.py PATH-TO/pages-in-wikish/* 
+    
+NB: saves files with *same name* as originals, in the local directory where this is run from. Be careful. DON'T run this in the same directory as the original files.
+
+
+
+##### JSON diff
+
+The `php` directory contains a copy of jsondiff.php which can diff two online JSON files. It's included in the Project ThoughtStorms site as a useful way to diff the same page on two different SFW servers.
+
+##### Other Scripts
+
+The `scripts` directory contains Python files (in CGI) format which can be used to quickly paste in a block of multi-paragraph text and generate an SFW formated page from it. You can try it [here](http://project.thoughtstorms.info/paste.html)
 
 
