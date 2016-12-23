@@ -20,10 +20,16 @@ The current philosphy is that all the useful intelligence ie. classes that under
 ##### Running the Wiki
 
 	cd PATH-TO/project-thoughtstorms/ThoughtStorms/python/servers
+
+Once in this directory, you need to make sure there's a symbolic link to the `thoughtstorms` directory that contains the libraries. For example, in Linux, type
+
+    ln -s ../thoughtstorms thoughtstorms
+
+This only needs to be done once. Now we're in the right directory, and have the symbolic link, you can type :
 	
 	python wiki.py ThoughtStorms w 8090 PATH-TO-PAGES PATH-TO/project-thoughtstorms/ThoughtStorms/python/servers/assets
 
-What are the wiki.py options?
+What are these wiki.py options?
 
     wiki.py wikiname typecode port-number path-to-pages path-to-assets
     
