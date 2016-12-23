@@ -27,7 +27,7 @@ Once in this directory, you need to make sure there's a symbolic link to the `th
 
 This only needs to be done once. Now we're in the right directory, and have the symbolic link, you can type :
 	
-	python wiki.py ThoughtStorms w 8090 PATH-TO-PAGES PATH-TO/project-thoughtstorms/ThoughtStorms/python/servers/assets
+	python wiki.py ThoughtStorms w 8090 PATH-TO-PAGES PATH-TO/ThoughtStorms/python/servers/assets
 
 What are these wiki.py options?
 
@@ -41,7 +41,7 @@ The `typecode` selects for the type of PageStore (and the permissions it implies
 
 `path-to-pages` is path to directory where pages are saved
 
-`path-to-assets` is path to directory where the html template is stored.  
+`path-to-assets` is path to directory where the html template is stored.
 
 ##### Conversions
 
