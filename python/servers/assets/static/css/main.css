@@ -22,6 +22,9 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a7cfdf', end
 	margin: 0 auto;
 	background-color:#fada96;
 	width:100%;
+	position:sticky;
+	top:0px;
+	left:0px;
 }
 
 h2 { 
