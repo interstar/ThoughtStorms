@@ -1,9 +1,10 @@
 import markdown
 from thoughtstorms.PageStore import WritablePageStore
+from bottle import template
 
 class Services :
 	def __init__(self,service_dir) :
-		self.pageStore = WritablePageStore(service_dir,"yml")
+		self.page_store = WritablePageStore(service_dir,"yml")
 		self.path_services = {}
 		
 	def add_path_service(self,sname,ps) :
@@ -28,15 +29,14 @@ class ServiceService :
 	def set_services(self,services) :
 		self.services = services
 		
-	def process(self,*args) :
-		installed = "\n".join(["""* [%s](/services/%s) : %s""" % (self.name,self.sname,self.description)])
-		x = markdown.markdown("""### This is %s
-		
+	def process(self,wiki,*args) :
+		installed = "\n".join(["""* [%s](/services/%s), [DataPage](/sview/%s) : %s""" % (self.name,self.sname,self.sname,self.description)])
+		x = """	
 %s
 		
-%s""" % (self.name,self.description,installed ))
-		print x
-		return x
+%s""" % (self.description,installed )
+		body = wiki.chef.cook(x)		
+		return template('page', pageName=self.name,body=body,normal_page=False,pageStore=wiki.page_store,wikiname=wiki.wikiname)
 
 def register_service(services,service_class) :
 	s = service_class()

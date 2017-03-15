@@ -15,9 +15,18 @@
 		% if pageStore.is_writable() :
 		 | <a href="/edit/{{pageName}}">Edit this Page</a>
 		% end
+		|
+		<a href="/service/service_service">Services</a>
+		
 	</div>
 
-	<div class="headerbar">
+	<div class="
+	% if normal_page :
+headerbar
+	% else :
+serviceheaderbar
+	% end	
+	">
 		<h2>({{wikiname}}) {{pageName}}</h2>
 	</div>
 
