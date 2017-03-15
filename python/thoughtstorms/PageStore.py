@@ -1,5 +1,6 @@
 
 from txlib import chef
+import datetime
 
 class PageStore :
 	
@@ -37,8 +38,21 @@ class WritablePageStore(PageStore) :
 
 	def is_writable(self) : return True
 
+	def update_recent_changes(self,pName) :
+		f = open(self.fName("recentchanges"))
+		xs = f.readlines()
+		f.close()
+
+		xs = (["* [[%s]] %s\n" % (pName,datetime.date.today())] + xs)[:50]
+		
+		f = open(self.fName("recentchanges"),'w')
+		f.write("".join(xs))
+		f.close()
+		
+
 	def put(self,pName,body) :
 		f = open(self.fName(pName.lower()),"w")
 		f.write(body)
 		f.close()
+		self.update_recent_changes(pName)
 	
