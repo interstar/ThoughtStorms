@@ -8,8 +8,6 @@ import bottle
 from thoughtstorms.PageStore import PageStore, WritablePageStore
 from thoughtstorms.txlib import MarkdownThoughtStorms
 
-from services import Services, ServiceService, register_service
-
 
 class TSWiki :
 	def __init__(self, wikiname, typecode, port, pages_dir, services_dir, assets_dir) :
@@ -40,12 +38,11 @@ class TSWiki :
 
 		# Setup Services
 		print "Services Directory : %s" % services_dir
-		self.services = Services(services_dir)
-		register_service(self.services,ServiceService)
-
-		print self.services.path_services
-
-
+		if typecode == "w" :
+			self.service_page_store = WritablePageStore(services_dir,"yml")
+		else :
+			self.service_page_store = PageStore(services_dir,"md")
+		
 # args 
 # python wiki.py wikiname typecode port-no pages_dir services_dir assets_dir
 #wikiname, typecode, port, pages_dir, services_dir, assets_dir = argv[1],argv[2],argv[3],argv[4],argv[5],argv[6]
@@ -58,6 +55,8 @@ wiki = TSWiki(argv[1],argv[2],argv[3],argv[4],argv[5],argv[6])
 ## ________________________________________________________________________
 
 ## Helpers
+
+def j(xs) : return "\n".join(xs)	
 
 def make_form(current_content,put_route,page_name) :
 	return """
@@ -85,7 +84,6 @@ def root() :
 def css(filepath):
     return static_file(filepath, root=wiki.static_root+"/css")
 
-
     
 ## Actions
 @route('/view/<pname>')
@@ -107,33 +105,41 @@ def poster(pname) :
 	redirect('/view/%s'%pname)
 
 
-
 # Services
-@get('/service/<sname>')
-def get_service(sname) :
-	if wiki.services.exists(sname) :
-		s = wiki.services.find_service(sname)
-		return s.process(wiki)
-	else :
-		return "SERVICE %s DOESN'T EXIST" % sname
+wiki.service_names = [["services","/service/services","List of all Services on this Wiki"], 
+					  ["raw","/service/raw/HelloWorld","Raw version of a page"]]
+
+
+@get('/service/services')
+def get_services() :	
+	services = ["""**%s**,, Example [%s](%s),, [DataPage](/sview/%s),, %s""" % (s,expl,expl,s,desc) for s,expl,desc in wiki.service_names]
+	
+	x = wiki.chef.cook("\n" + j(services))
+	return make_page("Services",x,wiki)
+	
+@get('/service/raw/<pname>')
+def get_raw(pname) :
+	return wiki.page_store.get(pname,lambda pname, e : "Page does not exist. Try <a href='/edit/%s'>editing</a>"%pname, lambda pname, e : "Error: %s" % e )
+	
+
 		
 @route('/sview/<sname>')
 def view(sname) :
-	x = wiki.services.page_store.get(sname,lambda pname, e : "Page does not exist. Try <a href='/sedit/%s'>editing</a>"%pname, lambda pname, e : "Error: %s" % e )
+	x = wiki.service_page_store.get(sname,lambda pname, e : "Page does not exist. Try <a href='/sedit/%s'>editing</a>"%pname, lambda pname, e : "Error: %s" % e )
 	return make_page(sname, x, wiki, False)
 
 @route('/sedit/<sname>')
 def editor(sname) :
-	x = wiki.services.page_store.get(sname,lambda pname, e : "Data for Service %s\n=====" % pname, lambda pname, e : "Error: %s" % e)	
+	x = wiki.service_page_store.get(sname,lambda pname, e : "Data for Service %s\n=====" % pname, lambda pname, e : "Error: %s" % e)	
 	return make_page(sname, make_form(x,"sput",sname), wiki, False)
 
 
 @post('/sput/<sname>')
 def poster(sname) :
 	body = request.forms.get("body")
-	wiki.services.page_store.put(sname,body)
+	wiki.service_page_store.put(sname,body)
 	redirect('/sview/%s'%sname)
-		
+	
 
 if __name__ == '__main__' :
 	run(host='0.0.0.0', port=wiki.port)

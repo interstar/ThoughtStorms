@@ -16,7 +16,7 @@
 		 | <a href="/edit/{{pageName}}">Edit this Page</a>
 		% end
 		|
-		<a href="/service/service_service">Services</a>
+		<a href="/service/services">Services</a>
 		
 	</div>
 
