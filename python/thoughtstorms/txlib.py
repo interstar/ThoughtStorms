@@ -63,7 +63,8 @@ def wiki_filters(s) :
 	return sqrwiki_line(table_line(s))
 
 		
-## Standard Wikish (from UseMod)		
+## Standard Wikish (the markup of UseMod)
+	
 class WikishProcessor :
 	
     def __init__(self) :
@@ -131,9 +132,6 @@ class WikishProcessor :
         self.indent = count
         return s
 
-
-
-
     def cook(self,p) :
         lines = (self.line(wiki_filters(l)) for l in p.split("\n"))
         lines = (self.outlineFilter(l) for l in lines)
@@ -141,19 +139,7 @@ class WikishProcessor :
         return "\n".join(lines)
 
 
-
-
-
 chef = WikishProcessor()
-
-class MarkdownThoughtStorms :
-	
-	def cook(self,p) :
-		lines = (wiki_filters(l) for l in p.split("\n"))
-		lines = (social_filters(l) for l in lines)
-		page = markdown.markdown("\n".join(lines))                
-		return page
-
 
 class Wikish2Markdown(WikishProcessor) :
 
@@ -199,4 +185,17 @@ class Wikish2Markdown(WikishProcessor) :
 		return nl
 
 
+#### Current
+class MarkdownThoughtStorms :
+	"""ThoughtStorms Wiki has been converted to Markdown for basic formatting.
+	We keep some extra formatting. 
+	Double Square brackets for internal links and Double commas as a quick table format, (handled within "wiki_filters")
+	social_filters handles the social media embedding we use.
+	Finally we do markdown.
+	"""
+	def cook(self,p) :
+		lines = (wiki_filters(l) for l in p.split("\n"))
+		lines = (social_filters(l) for l in lines)
+		page = markdown.markdown("\n".join(lines))                
+		return page
 
