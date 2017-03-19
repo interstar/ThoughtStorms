@@ -8,6 +8,7 @@ import bottle
 from thoughtstorms.PageStore import PageStore, WritablePageStore
 from thoughtstorms.txlib import MarkdownThoughtStorms
 
+from analyze import Analyzer
 
 class TSWiki :
 	def __init__(self, wikiname, typecode, port, pages_dir, services_dir, assets_dir) :
@@ -107,7 +108,9 @@ def poster(pname) :
 
 # Services
 wiki.service_names = [["services","/service/services","List of all Services on this Wiki"], 
-					  ["raw","/service/raw/HelloWorld","Raw version of a page"]]
+					  ["raw","/service/raw/HelloWorld","Raw version of a page"],
+					  ["analyze","/service/analyze","Analyze a link to derive embeddable form and other useful data"]
+					  ]
 
 
 @get('/service/services')
@@ -121,6 +124,16 @@ def get_services() :
 def get_raw(pname) :
 	return wiki.page_store.get(pname,lambda pname, e : "Page does not exist. Try <a href='/edit/%s'>editing</a>"%pname, lambda pname, e : "Error: %s" % e )
 	
+analyzer = Analyzer()
+
+@get('/service/analyze')
+def get_analyze() :
+	return make_page("Analyzer",analyzer.make_form(),wiki, False)
+	
+@post('/service/analyze_it')
+def analyze() :
+	data = request.forms.get("data")
+	return make_page("Analysis",analyzer.analyze(data),wiki, False)
 
 		
 @route('/sview/<sname>')
@@ -139,6 +152,8 @@ def poster(sname) :
 	body = request.forms.get("body")
 	wiki.service_page_store.put(sname,body)
 	redirect('/sview/%s'%sname)
+	
+	
 	
 
 if __name__ == '__main__' :

@@ -1,27 +1,9 @@
-import re, markdown
+import re, markdown, yaml
 
 
 ## Line based 
 
-r_youtube = re.compile("::YOUTUBE=(\S+)",re.MULTILINE)
-r_soundcloud = re.compile("::SOUNDCLOUD=(\S+)",re.MULTILINE)
-r_bandcamp = re.compile("::BANDCAMP=(\S+)\s+(\S+)\s+(.+)",re.MULTILINE)
 r_sqrwiki = re.compile("(\[\[(\S+?)\]\])")
-
-def youtube_line(s) :
-	if r_youtube.search(s) :            
-		s = r_youtube.sub(r"""<div class="youtube-embedded"><iframe width="400" height="271" src="\1" frameborder="0" allowfullscreen></iframe></div>""",s)
-	return s
-
-def soundcloud_line(s) :
-	if r_soundcloud.search(s) :
-		s = r_soundcloud.sub(r"""<div class="soundcloud-embedded"><iframe width="100%" height="450" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player?url=\1&amp;visual=true"></iframe></div>""",s)            
-	return s
-
-def bandcamp_line(s) :
-	if r_bandcamp.search(s) :
-		s = r_bandcamp.sub(r"""<div class="bandcamp-embedded"><iframe style="border: 0; width: 350px; height: 555px;" src="https://bandcamp.com/EmbeddedPlayer/album=\1/size=large/bgcol=ffffff/linkcol=0687f5/transparent=true/" seamless><a href="\2">\3</a></iframe></div>""",s)
-	return s
 
 def sqrwiki_line(s) :
 	if r_sqrwiki.search(s) :
@@ -57,7 +39,6 @@ class DoubleCommaTabler :
 		
 table_line = DoubleCommaTabler()
 
-def social_filters(s) : return youtube_line(soundcloud_line(bandcamp_line(s)))
 
 def wiki_filters(s) : 
 	return sqrwiki_line(table_line(s))
@@ -186,6 +167,102 @@ class Wikish2Markdown(WikishProcessor) :
 
 
 #### Current
+
+from functools import reduce
+
+OPEN = "[<"
+CLOSE = ">]"
+class BlockParseException(Exception) :
+	pass
+
+class UnknownBlock() : 
+	def evaluate(self,lines) :
+		return ["Block of type Unknown evaluated\n"] + lines + ["\nBLOCK ENDS"]
+		
+class YouTubeBlock() :
+	def evaluate(self,lines) :
+		data = yaml.load("\n".join(lines))
+		return ["""<div class="youtube-embedded"><iframe width="400" height="271" src="http://www.youtube.com/embed/%s" frameborder="0" allowfullscreen></iframe></div>""" % data["id"]]
+
+class SoundCloudBlock() :
+	def evaluate(self,lines) :
+		data = yaml.load("\n".join(lines))
+		return [r"""<div class="soundcloud-embedded"><iframe width="100%" height="450" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player?url=https://api.soundcloud.com/playlists/""" + "%s"%data["id"] + """&amp;visual=true"></iframe></div>"""]
+
+class BandCampBlock() :
+	def evaluate(self,lines) :
+		data = yaml.load("\n".join(lines))
+		return ["""<div class="bandcamp-embedded"><iframe style="border: 0; width: 350px; height: 555px;" src="https://bandcamp.com/EmbeddedPlayer/album=%s/size=large/bgcol=ffffff/linkcol=0687f5/transparent=true/" seamless><a href="%s">%s</a></iframe></div>""" % (data["id"],data["url"],data["description"])]
+		
+class LocalFileBlock() :
+	def evaluate(self,lines) :
+		data = yaml.load("\n".join(lines))
+		f = open(data["path"])
+		ext_lines = f.readlines()
+		return ["<pre>"] + ext_lines + ["</pre>"]
+
+class Block :
+	def __init__(self,typ) :
+		self.type = typ
+		self.lines = []
+		if self.type == "YOUTUBE" :
+			self.evaluator = YouTubeBlock()
+		elif self.type == "SOUNDCLOUD" :
+			self.evaluator = SoundCloudBlock()
+		elif self.type == "BANDCAMP" :
+			self.evaluator = BandCampBlock()
+		elif self.type == "LOCALFILE" :
+			self.evaluator = LocalFileBlock()
+			
+		else :
+			self.evaluator = UnknownBlock()
+		
+	def add_line(self,l) :
+		self.lines.append(l)
+		
+	def evaluate(self) : return self.evaluator.evaluate(self.lines)
+		
+class BlockServices : 
+	"""
+	Provides embeddable blocks within pages. This should become the generic mechanism for all inclusions / transclusions 
+	"""
+	def handle_lines(self,lines) :
+		if not reduce(lambda a, b : a or b, [OPEN in l for l in lines],False) : return lines
+		current_block = None
+		in_block = False
+		count = 0
+		new_lines = []
+		for l in lines :
+			if in_block :
+				# In Block
+				if CLOSE in l :
+					in_block = False
+					count = count + 1
+					new_lines = new_lines + current_block.evaluate()
+					current_block=None
+					continue
+				elif OPEN in l :
+					raise BlockParseException("Opening block inside another block at line %s" % count)
+				else :
+					# Do stuff inside block
+					current_block.add_line(l)
+					count = count + 1
+			else :
+				# Not in Block
+				if CLOSE in l : 
+					raise BlockParseException("Trying to close a block when we aren't in one at line %s" % count)	
+				if OPEN in l :
+					in_block = True
+					block_type = l.split(OPEN)[1].strip()
+					current_block = Block(block_type)
+					count = count + 1
+					continue
+				# here we are not in a block and not starting one
+				new_lines.append(l)
+				count = count + 1
+				
+		return new_lines
+
 class MarkdownThoughtStorms :
 	"""ThoughtStorms Wiki has been converted to Markdown for basic formatting.
 	We keep some extra formatting. 
@@ -194,8 +271,9 @@ class MarkdownThoughtStorms :
 	Finally we do markdown.
 	"""
 	def cook(self,p) :
-		lines = (wiki_filters(l) for l in p.split("\n"))
-		lines = (social_filters(l) for l in lines)
+		lines = p.split("\n")
+		lines = BlockServices().handle_lines(lines)
+		lines = (wiki_filters(l) for l in lines)
 		page = markdown.markdown("\n".join(lines))                
 		return page
 
