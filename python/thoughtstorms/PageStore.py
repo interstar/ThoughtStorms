@@ -39,14 +39,14 @@ class WritablePageStore(PageStore) :
 	def is_writable(self) : return True
 
 	def update_recent_changes(self,pName) :
-		f = open(self.fName("recentchanges"))
-		xs = f.readlines()
-		f.close()
-
-		xs = (["* [[%s]] %s\n" % (pName,datetime.date.today())] + xs)[:50]
+		xs = self.get("RecentChanges",lambda pname, e : "", lambda pname, e : "Error %s " % e)
+ 		print xs
+ 		xs = xs.split("\n")
+		
+		xs = (["* [[%s]] %s" % (pName,datetime.date.today())] + xs)[:50]
 		
 		f = open(self.fName("recentchanges"),'w')
-		f.write("".join(xs))
+		f.write("\n".join(xs))
 		f.close()
 		
 

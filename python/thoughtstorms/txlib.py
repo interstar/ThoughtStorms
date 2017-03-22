@@ -3,8 +3,26 @@ import re, markdown, yaml
 
 ## Line based 
 
+r_sister = re.compile("(\[\[((\S+?):(\S+?))\]\])")
+def sub_sister(sister_sites) :
+	def ss(mo) :
+		mog = mo.groups()
+		site_id,page_name = mog[2],mog[3]
+		try :
+			url = sister_sites[site_id].strip("/")
+			return """<a href="%s/%s">%s:%s</a>""" % (url,page_name,site_id,page_name)
+		except Exception, e :
+			return "** | Error in SisterSite link ... seems like %s is not recognised. %s %s"  % (site_id,e,sister_sites)
+	return ss
+
 r_sqrwiki = re.compile("(\[\[(\S+?)\]\])")
 
+
+def sister_line(s,sister_sites) :
+	if r_sister.search(s) :
+		s = r_sister.sub(sub_sister(sister_sites),s)
+	return s
+	
 def sqrwiki_line(s) :
 	if r_sqrwiki.search(s) :
 		s = r_sqrwiki.sub(r"""<a href="/view/\2">\2</a>""",s)
@@ -40,8 +58,8 @@ class DoubleCommaTabler :
 table_line = DoubleCommaTabler()
 
 
-def wiki_filters(s) : 
-	return sqrwiki_line(table_line(s))
+def wiki_filters(s,sister_sites) : 
+	return sqrwiki_line(sister_line(table_line(s), sister_sites))
 
 		
 ## Standard Wikish (the markup of UseMod)
@@ -197,8 +215,11 @@ class BandCampBlock() :
 class LocalFileBlock() :
 	def evaluate(self,lines) :
 		data = yaml.load("\n".join(lines))
-		f = open(data["path"])
-		ext_lines = f.readlines()
+		try :
+			f = open(data["path"])
+			ext_lines = f.readlines()
+		except Exception, e :
+			ext_lines = ["Error, can't read %s" % data["path"]]
 		return ["<pre>"] + ext_lines + ["</pre>"]
 
 class Block :
@@ -270,10 +291,10 @@ class MarkdownThoughtStorms :
 	social_filters handles the social media embedding we use.
 	Finally we do markdown.
 	"""
-	def cook(self,p) :
+	def cook(self,p,sister_sites) :
 		lines = p.split("\n")
 		lines = BlockServices().handle_lines(lines)
-		lines = (wiki_filters(l) for l in lines)
+		lines = (wiki_filters(l,sister_sites) for l in lines)
 		page = markdown.markdown("\n".join(lines))                
 		return page
 

@@ -13,7 +13,7 @@
 		<a href="/view/RecentChanges">RecentChanges</a>
 
 		% if pageStore.is_writable() :
-		 | <a href="/edit/{{pageName}}">Edit this Page</a>
+		 | <a href="/{{editPathName}}/{{pageName}}">Edit this Page</a>
 		% end
 		|
 		<a href="/service/services">Services</a>

@@ -3,7 +3,7 @@ from sys import argv
 
 from bottle import route, run, template, get, post, request, redirect, static_file
 
-import bottle
+import bottle, yaml
 
 from thoughtstorms.PageStore import PageStore, WritablePageStore
 from thoughtstorms.txlib import MarkdownThoughtStorms
@@ -42,7 +42,15 @@ class TSWiki :
 		if typecode == "w" :
 			self.service_page_store = WritablePageStore(services_dir,"yml")
 		else :
-			self.service_page_store = PageStore(services_dir,"md")
+			self.service_page_store = PageStore(services_dir,"yml")
+
+	def get_sister_sites(self) :
+		sispage = self.service_page_store.get("sister_sites",lambda pname, e : "",lambda pname, e : "Error %s" % e)
+		if sispage != "" :
+			self.sister_sites = yaml.load(sispage)
+		else :
+			self.sister_sites = {}				
+		return self.sister_sites
 		
 # args 
 # python wiki.py wikiname typecode port-no pages_dir services_dir assets_dir
@@ -71,7 +79,11 @@ def make_form(current_content,put_route,page_name) :
 
 
 def make_page(page_name, body, wiki,normal=True) :
-	return template('page',pageName=page_name,wikiname=wiki.wikiname,normal_page=normal,pageStore=wiki.page_store,body=body)
+	if normal :
+		edit_path_name = "edit"
+	else: 
+		edit_path_name = "sedit"
+	return template('page',pageName=page_name,wikiname=wiki.wikiname, normal_page=normal,editPathName=edit_path_name, pageStore=wiki.page_store,body=body)
 
 ## ________________________________________________________________________
 ## Routing
@@ -90,7 +102,8 @@ def css(filepath):
 @route('/view/<pname>')
 def view(pname) :
 	x = wiki.page_store.get(pname,lambda pname, e : "Page does not exist. Try <a href='/edit/%s'>editing</a>"%pname, lambda pname, e : "Error: %s" % e )
-	body = wiki.chef.cook(x)	
+	ss = wiki.get_sister_sites()
+	body = wiki.chef.cook(x,ss)
 	return make_page(pname, body, wiki)
 
 @route('/edit/<pname>')
@@ -109,15 +122,17 @@ def poster(pname) :
 # Services
 wiki.service_names = [["services","/service/services","List of all Services on this Wiki"], 
 					  ["raw","/service/raw/HelloWorld","Raw version of a page"],
-					  ["analyze","/service/analyze","Analyze a link to derive embeddable form and other useful data"]
+					  ["analyze","/service/analyze","Analyze a link to derive embeddable form and other useful data"],
+					  ["sister_sites","","Sister sites are defined on the data-page, and used in double-square links"]
 					  ]
 
 
 @get('/service/services')
 def get_services() :	
 	services = ["""**%s**,, Example [%s](%s),, [DataPage](/sview/%s),, %s""" % (s,expl,expl,s,desc) for s,expl,desc in wiki.service_names]
-	
-	x = wiki.chef.cook("\n" + j(services))
+
+	ss = wiki.get_sister_sites()
+	x = wiki.chef.cook("\n" + j(services),ss)
 	return make_page("Services",x,wiki)
 	
 @get('/service/raw/<pname>')
@@ -139,6 +154,7 @@ def analyze() :
 @route('/sview/<sname>')
 def view(sname) :
 	x = wiki.service_page_store.get(sname,lambda pname, e : "Page does not exist. Try <a href='/sedit/%s'>editing</a>"%pname, lambda pname, e : "Error: %s" % e )
+	x = "<pre>%s</pre>"%x
 	return make_page(sname, x, wiki, False)
 
 @route('/sedit/<sname>')
