@@ -1,7 +1,7 @@
 
 from sys import argv
 
-from bottle import route, run, template, get, post, request, redirect, static_file
+from bottle import route, run, template, get, post, request, redirect, static_file, response
 
 import bottle, yaml
 
@@ -137,6 +137,7 @@ def get_services() :
 	
 @get('/service/raw/<pname>')
 def get_raw(pname) :
+	response.content_type="text/text"
 	return wiki.page_store.get(pname,lambda pname, e : "Page does not exist. Try <a href='/edit/%s'>editing</a>"%pname, lambda pname, e : "Error: %s" % e )
 	
 analyzer = Analyzer()
