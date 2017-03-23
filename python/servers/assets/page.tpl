@@ -27,7 +27,16 @@ headerbar
 serviceheaderbar
 	% end	
 	">
-		<h2>({{wikiname}}) {{pageName}}</h2>
+	
+<h2>
+% if normal_page :
+<a href="/service/search/{{pageName}}">{{pageName}}</a>
+		% else :
+		{{pageName}}
+		% end
+
+		<span class="wikiname">({{wikiname}})</span></h2>
+
 	</div>
 
 	<div id="content">
