@@ -123,7 +123,8 @@ def poster(pname) :
 wiki.service_names = [["services","/service/services","List of all Services on this Wiki"], 
 					  ["raw","/service/raw/HelloWorld","Raw version of a page"],
 					  ["analyze","/service/analyze","Analyze a link to derive embeddable form and other useful data"],
-					  ["sister_sites","","Sister sites are defined on the data-page, and used in double-square links"]
+					  ["sister_sites","","Sister sites are defined on the data-page, and used in double-square links"],
+					  ["search","/service/search/HelloWorld","Crude grep for text in pages"]
 					  ]
 
 
@@ -150,6 +151,16 @@ def get_analyze() :
 def analyze() :
 	data = request.forms.get("data")
 	return make_page("Analysis",analyzer.analyze(data),wiki, False)
+	
+@get('/service/search/<text>')
+def get_search(text) :
+	if not wiki.page_store.is_searchable() :
+		out = "This PageStore is not searchable"
+	else : 
+		out = wiki.page_store.search(text)
+	ss = wiki.get_sister_sites()
+	out = wiki.chef.cook(out,ss)
+	return make_page("Search Result for %s" % text,  out , wiki, False)
 
 		
 @route('/sview/<sname>')

@@ -1,5 +1,7 @@
 
 from txlib import chef
+from subprocess import check_output
+
 import datetime
 
 class PageStore :
@@ -30,6 +32,21 @@ class PageStore :
 	
 	def put(self,pName,body) :
 		raise Exception("This PageStore doesn't allow writing")
+		
+	def is_searchable(self) : return True
+	
+	def search(self,text) :
+		res = check_output(["grep -i %s %s/*.%s" % (text,self.pages_dir,self.extension)], shell=True)
+		print res
+		rs = res.split("\n")
+		def f(l) :
+			r = l.split(":")[0]
+			r = r.split("/")[-1]
+			r = r.strip(".md")
+			return "* [[%s]]" % r
+		rs = sorted(set([f(r) for r in rs ]))
+		print rs
+		return "\n".join(rs)
  
 class WritablePageStore(PageStore) :
 
