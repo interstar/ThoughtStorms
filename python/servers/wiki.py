@@ -120,7 +120,9 @@ def poster(pname) :
 
 
 # Services
-wiki.service_names = [["services","/service/services","List of all Services on this Wiki"], 
+wiki.service_names = [["services","/service/services","List of all Services on this wiki"], 
+					  ["all","/service/all","List of all Pages in this wiki"],
+					  ["all raw","/service/all_raw","List of all Pages in raw text"],
 					  ["raw","/service/raw/HelloWorld","Raw version of a page"],
 					  ["analyze","/service/analyze","Analyze a link to derive embeddable form and other useful data"],
 					  ["sister_sites","","Sister sites are defined on the data-page, and used in double-square links"],
@@ -162,7 +164,18 @@ def get_search(text) :
 	out = wiki.chef.cook(out,ss)
 	return make_page("Search Result for %s" % text,  out , wiki, False)
 
-		
+@get('/service/all')
+def get_all() :
+	out = "\n".join(["* [[%s]]" % p for p in wiki.page_store.all_pages()])
+	ss = wiki.get_sister_sites()
+	out = wiki.chef.cook(out,ss)
+	return make_page("All Pages", out, wiki, False)
+	
+@get('/service/all_raw')
+def get_all_raw() :
+	response.content_type="text/text"
+	return "\n".join(wiki.page_store.all_pages())
+
 @route('/sview/<sname>')
 def view(sname) :
 	x = wiki.service_page_store.get(sname,lambda pname, e : "Page does not exist. Try <a href='/sedit/%s'>editing</a>"%pname, lambda pname, e : "Error: %s" % e )
