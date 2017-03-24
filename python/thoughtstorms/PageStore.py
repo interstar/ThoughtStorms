@@ -53,8 +53,7 @@ class PageStore :
 		def f(l) :
 			r = self.file_name_2_page_name(l.split(":")[0])			
 			return "* [[%s]]" % r
-		rs = sorted(set([f(r) for r in rs ]))
-		print rs		
+		rs = sorted(set([f(r) for r in rs ]))		
 		return "\n".join(rs)
 
 	def all_pages(self) :
@@ -72,7 +71,7 @@ class WritablePageStore(PageStore) :
 
 	def update_recent_changes(self,pName) :
 		xs = self.get("RecentChanges",lambda pname, e : "", lambda pname, e : "Error %s " % e)
- 		print xs
+
  		xs = xs.split("\n")
 		
 		xs = (["* [[%s]] %s" % (pName,datetime.date.today())] + xs)[:50]

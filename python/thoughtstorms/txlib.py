@@ -1,4 +1,4 @@
-import re, markdown, yaml
+import re, markdown, yaml, urllib2
 
 
 ## Line based 
@@ -222,6 +222,31 @@ class LocalFileBlock() :
 			ext_lines = ["Error, can't read %s" % data["path"]]
 		return ["<pre>"] + ext_lines + ["</pre>"]
 
+class SimpleRawTranscludeBlock() :
+	def evaluate(self,lines,md_eval=True) :
+		data = yaml.load("\n".join(lines))
+		try :
+			url = data["url"]
+			response = urllib2.urlopen(url)
+			s = response.read()
+			#return s.split("\n")
+			if md_eval :
+				s = MarkdownThoughtStorms().cook(s,{})
+			s = """
+<div class="transcluded">
+
+<strong>Transcluded from <a href="%s">%s</a> </strong>
+
+%s
+
+</div>	
+""" % (url,url,s)
+			return s.split("\n")
+			
+			
+		except Exception, e :
+			return ["Error, can't get data from %s" % url]
+
 class Block :
 	def __init__(self,typ) :
 		self.type = typ
@@ -234,6 +259,8 @@ class Block :
 			self.evaluator = BandCampBlock()
 		elif self.type == "LOCALFILE" :
 			self.evaluator = LocalFileBlock()
+		elif self.type == "SIMPLERAWTRANSCLUDE" :
+			self.evaluator = SimpleRawTranscludeBlock()
 			
 		else :
 			self.evaluator = UnknownBlock()
@@ -280,8 +307,7 @@ class BlockServices :
 					continue
 				# here we are not in a block and not starting one
 				new_lines.append(l)
-				count = count + 1
-				
+				count = count + 1		
 		return new_lines
 
 class MarkdownThoughtStorms :

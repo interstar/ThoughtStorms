@@ -61,3 +61,7 @@ blockquote {
   quotes: "\201C""\201D""\2018""\2019";
 }
 
+.transcluded {
+  background-color: #eeeeff;
+  padding:10px;
+}
