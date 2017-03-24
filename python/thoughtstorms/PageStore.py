@@ -2,7 +2,7 @@
 from txlib import chef
 from subprocess import check_output, CalledProcessError
 
-import datetime
+import datetime, re
 
 class PageStore :
 	
@@ -70,14 +70,27 @@ class WritablePageStore(PageStore) :
 	def is_writable(self) : return True
 
 	def update_recent_changes(self,pName) :
+		r_sqr = re.compile("(\[\[(\S+?)\]\])")
+		
 		xs = self.get("RecentChanges",lambda pname, e : "", lambda pname, e : "Error %s " % e)
+ 		xs = xs.split("\n") 				
+		xs = (["* [[%s]] %s" % (pName,datetime.date.today())] + xs)
 
- 		xs = xs.split("\n")
-		
-		xs = (["* [[%s]] %s" % (pName,datetime.date.today())] + xs)[:50]
-		
+		ys = []
+		seen = set([])
+		for x in xs :
+			try :
+				pname = r_sqr.finditer(x).next().groups()[1]
+				if not pname in seen :
+					seen.add(pname)
+					ys.append(x)
+			except Exception, e :
+				pass
+				
+		ys = ys[:50]
+
 		f = open(self.fName("recentchanges"),'w')
-		f.write("\n".join(xs))
+		f.write("\n".join(ys))
 		f.close()
 		
 
