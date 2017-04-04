@@ -1,23 +1,25 @@
 
-from txlib import chef
 from subprocess import check_output, CalledProcessError
 
 import datetime, re
 
 class PageStore :
 	
-	def __init__(self,pages_dir,extension) :
+	def __init__(self,pages_dir,extension,lc=False) :
 		self.pages_dir = pages_dir
 		self.extension = extension
+		self.lower_case = lc
 	
 	def __str__(self) :
 		return "(ReadOnly) PageStore with pages at %s" % self.pages_dir
 	
 	def fName(self,pName) :
+		if self.lower_case :
+			pName=pName.lower()			
 		return "%s/%s.%s" % (self.pages_dir,pName,self.extension)
 		
 	def get(self,pName,no_file_handler,other_error_handler) :
-		file_name = self.fName(pName.lower())
+		file_name = self.fName(pName)
 		try :
 			with open(file_name) as f :
 				return f.read().decode("utf-8")
@@ -64,6 +66,12 @@ class PageStore :
 				
 class WritablePageStore(PageStore) :
 
+	def __init__(self,pages_dir,extension,recent_changes=False,lc=False) :
+		self.pages_dir = pages_dir
+		self.extension = extension
+		self.lower_case = lc
+		self.recent_changes = recent_changes
+
 	def __str__(self) :
 		return "Read/Write PageStore with pages at %s" % self.pages_dir
 
@@ -95,8 +103,9 @@ class WritablePageStore(PageStore) :
 		
 
 	def put(self,pName,body) :
-		f = open(self.fName(pName.lower()),"w")
+		f = open(self.fName(pName),"w")
 		f.write(body)
 		f.close()
-		self.update_recent_changes(pName)
+		if self.recent_changes :
+			self.update_recent_changes(pName)
 	
