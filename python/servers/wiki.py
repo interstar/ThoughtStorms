@@ -31,9 +31,9 @@ class TSWiki :
 
 		# Setup PageStore
 		if typecode == "w" :
-			self.page_store = WritablePageStore(pages_dir,"md")
+			self.page_store = WritablePageStore(pages_dir,"md",lc=True,recent_changes=True)
 		else :
-			self.page_store = PageStore(pages_dir,"md")
+			self.page_store = PageStore(pages_dir,"md",lc=True)
 	
 		print "PageStore : %s" % self.page_store
 
@@ -101,7 +101,11 @@ def css(filepath):
 ## Actions
 @route('/view/<pname>')
 def view(pname) :
-	x = wiki.page_store.get(pname,lambda pname, e : "Page does not exist. Try <a href='/edit/%s'>editing</a>"%pname, lambda pname, e : "Error: %s" % e )
+	if wiki.page_store.is_writable() :
+		msg = "Page does not exist. Try <a href='/edit/%s'>editing</a>"%pname
+	else :
+		msg = "Page does not exist."
+	x = wiki.page_store.get(pname,lambda pname, e : msg, lambda pname, e : "Error: %s" % e )
 	ss = wiki.get_sister_sites()
 	body = wiki.chef.cook(x,ss)
 	return make_page(pname, body, wiki)
