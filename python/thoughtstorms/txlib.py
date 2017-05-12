@@ -212,6 +212,18 @@ class BandCampBlock() :
 		data = yaml.load("\n".join(lines))
 		return ["""<div class="bandcamp-embedded"><iframe style="border: 0; width: 350px; height: 555px;" src="https://bandcamp.com/EmbeddedPlayer/album=%s/size=large/bgcol=ffffff/linkcol=0687f5/transparent=true/" seamless><a href="%s">%s</a></iframe></div>""" % (data["id"],data["url"],data["description"])]
 		
+class AudioBlock() :
+	def evaluate(self,lines) :
+		data = yaml.load("\n".join(lines))
+		if "mp3" in data :
+			return ["""#### %s
+
+<audio controls>
+  <source src="%s" type="audio/mpeg">
+Your browser does not support the audio element.
+</audio>""" % (data["title"],data["mp3"])]
+
+
 class LocalFileBlock() :
 	def evaluate(self,lines) :
 		data = yaml.load("\n".join(lines))
@@ -247,6 +259,8 @@ class SimpleRawTranscludeBlock() :
 		except Exception, e :
 			return ["Error, can't get data from %s" % url]
 
+
+
 class Block :
 	def __init__(self,typ) :
 		self.type = typ
@@ -257,6 +271,8 @@ class Block :
 			self.evaluator = SoundCloudBlock()
 		elif self.type == "BANDCAMP" :
 			self.evaluator = BandCampBlock()
+		elif self.type == "AUDIO" :
+			self.evaluator = AudioBlock()
 		elif self.type == "LOCALFILE" :
 			self.evaluator = LocalFileBlock()
 		elif self.type == "SIMPLERAWTRANSCLUDE" :
