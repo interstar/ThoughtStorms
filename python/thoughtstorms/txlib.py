@@ -1,4 +1,4 @@
-import re, markdown, yaml, urllib2
+import re, markdown, yaml, urllib2, csv
 
 
 ## Line based 
@@ -260,7 +260,22 @@ class SimpleRawTranscludeBlock() :
 			return ["Error, can't get data from %s" % url]
 
 
-
+class CSVBlock() :
+	def evaluate(self,lines,md_eval=True) :
+		data = yaml.load("\n".join(lines))
+		try :
+			build = ""
+			with open(data["path"]) as csvfile :
+				reader = csv.reader(csvfile, delimiter=',', quotechar='"')
+				for row in reader:
+					build = build + "<tr><td>" + u'</td><td>'.join((i.decode("utf-8") for i in row)) + "</td></tr>\n"
+				return ["""\n<table class="table table-striped table-bordered table-condensed">
+    %s    
+    </table>""" % build]
+		except Exception, e :
+			return ["Error in CSV Include %s " % e]
+	
+	
 class Block :
 	def __init__(self,typ) :
 		self.type = typ
@@ -277,6 +292,8 @@ class Block :
 			self.evaluator = LocalFileBlock()
 		elif self.type == "SIMPLERAWTRANSCLUDE" :
 			self.evaluator = SimpleRawTranscludeBlock()
+		elif self.type == "CSV" :
+			self.evaluator = CSVBlock()
 			
 		else :
 			self.evaluator = UnknownBlock()
@@ -337,6 +354,6 @@ class MarkdownThoughtStorms :
 		lines = p.split("\n")
 		lines = BlockServices().handle_lines(lines)
 		lines = (wiki_filters(l,sister_sites) for l in lines)
-		page = markdown.markdown("\n".join(lines))                
+		page = markdown.markdown("\n".join((l.strip() for l in lines)))                
 		return page
 
