@@ -107,7 +107,7 @@ def view(pname) :
 		msg = "Page does not exist."
 	x = wiki.page_store.get(pname,lambda pname, e : msg, lambda pname, e : "Error: %s" % e )
 	ss = wiki.get_sister_sites()
-	body = wiki.chef.cook(x,ss)
+	body = wiki.chef.cook(x,"/view/",ss)
 	return make_page(pname, body, wiki)
 
 @route('/edit/<pname>')
@@ -139,7 +139,7 @@ def get_services() :
 	services = ["""**%s**,, Example [%s](%s),, [DataPage](/sview/%s),, %s""" % (s,expl,expl,s,desc) for s,expl,desc in wiki.service_names]
 
 	ss = wiki.get_sister_sites()
-	x = wiki.chef.cook("\n" + j(services),ss)
+	x = wiki.chef.cook("\n" + j(services),"/view/",ss)
 	return make_page("Services",x,wiki)
 	
 @get('/service/raw/<pname>')
@@ -165,14 +165,14 @@ def get_search(text) :
 	else : 
 		out = wiki.page_store.search(text)
 	ss = wiki.get_sister_sites()
-	out = wiki.chef.cook(out,ss)
+	out = wiki.chef.cook(out,"/view/",ss)
 	return make_page("Search Result for %s" % text,  out , wiki, False)
 
 @get('/service/all')
 def get_all() :
 	out = "\n".join(["* [[%s]]" % p for p in wiki.page_store.all_pages()])
 	ss = wiki.get_sister_sites()
-	out = wiki.chef.cook(out,ss)
+	out = wiki.chef.cook(out,"/view/",ss)
 	return make_page("All Pages", out, wiki, False)
 	
 @get('/service/all_raw')
