@@ -123,6 +123,11 @@ def poster(pname) :
 	redirect('/view/%s'%pname)
 
 
+@get('/delete/<pname>')
+def delete(pname) :
+	body = wiki.page_store.delete(pname)
+	return make_page(pname,body,wiki)
+
 # Services
 wiki.service_names = [["services","/service/services","List of all Services on this wiki"], 
 					  ["all","/service/all","List of all Pages in this wiki"],
