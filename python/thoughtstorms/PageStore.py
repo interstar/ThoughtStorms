@@ -35,6 +35,10 @@ class PageStore :
 	def put(self,pName,body) :
 		raise Exception("This PageStore doesn't allow writing")
 		
+
+	def delete(self,pname) :
+		raise Exception("This PageStore doesn't allow deleting")
+		
 	def is_searchable(self) : return True
 	
 	def file_name_2_page_name(self,fName) :
@@ -108,4 +112,16 @@ class WritablePageStore(PageStore) :
 		f.close()
 		if self.recent_changes :
 			self.update_recent_changes(pName)
-	
+
+	def delete(self,pname) :
+		with open(self.fName(pname)) as f :
+			body = """You deleted %s
+
+The following text has now gone from your system. This is your last chance to save it, by copying and recreating the page.
+			
+			<pre>\n\n %s \n\n</pre>  
+			
+Go <a href="/view/%s">here to recreate the page</a>. (But don't forget to copy first.""" % (pname, f.read(), pname)			
+			res = check_output(["rm %s" % self.fName(pname)], shell=True)
+			print res
+			return body
