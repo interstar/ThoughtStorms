@@ -14,6 +14,7 @@
 
 		% if pageStore.is_writable() :
 		 | <a href="/{{editPathName}}/{{pageName}}">Edit this Page</a>
+		 | <a href="/delete/{{pageName}}">Delete this Page</a>
 		% end
 		|
 		<a href="/service/services">Services</a>
@@ -28,14 +29,14 @@ serviceheaderbar
 	% end	
 	">
 	
-<h2>
-% if normal_page :
-<a href="/service/search/{{pageName}}">{{pageName}}</a>
-		% else :
+	<h2>
+	% if normal_page :
+		<a href="/service/search/{{pageName}}">{{pageName}}</a>
+	% else :
 		{{pageName}}
-		% end
+	% end
 
-		<span class="wikiname">({{wikiname}})</span></h2>
+	<span class="wikiname">({{wikiname}})</span></h2>
 
 	</div>
 
