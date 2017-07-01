@@ -123,6 +123,13 @@ def poster(pname) :
 	redirect('/view/%s'%pname)
 
 
+@get('/embed/<pname>')
+def embed(pname) :
+	x = wiki.page_store.get(pname,lambda pname, e : "New Page %s\n=====" % pname, lambda pname, e : "Error: %s" % e)	
+	ss = wiki.get_sister_sites()
+	return wiki.chef.cook(x,"",ss)
+	
+
 @get('/delete/<pname>')
 def delete(pname) :
 	body = wiki.page_store.delete(pname)
