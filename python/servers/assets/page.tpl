@@ -14,10 +14,14 @@
 
 		% if pageStore.is_writable() :
 		 | <a href="/{{editPathName}}/{{pageName}}">Edit this Page</a>
-		 | <a href="/delete/{{pageName}}">Delete this Page</a>
 		% end
 		|
 		<a href="/service/services">Services</a>
+		|
+		<a href="/service/analyze">Analysis</a>
+		% if pageStore.is_writable() :
+    	 | <a href="/delete/{{pageName}}">Delete this Page</a>
+		% end
 		
 	</div>
 

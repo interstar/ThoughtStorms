@@ -1,5 +1,5 @@
 
-import re
+import re, urllib2
 	
 class Analyzer :
 	def make_form(self) :
@@ -13,18 +13,12 @@ class Analyzer :
 
 	
 	def analyze_line(self,l) :
-		return self.youtube(l)
+		return self.quora(self.youtube(l))
 		
 	def youtube(self,l) :
-		print "in youtube"
-		print l
 		e = re.compile(r"https://www.youtube.com/watch\?v=(\S+)")
 		m = e.match(l)
-		print m
 		if m :
-			print "aa ", m
-			print "bb ", m.groups()
-			print "cc ", m.group(1)
 			return """
 [<YOUTUBE
 id : %s
@@ -33,6 +27,23 @@ id : %s
 			return l
 
 		
+	def quora(self,l) :
+		print "in quora"
+		print l
+		name = "Phil-Jones"
+		e = re.compile(r"https://www.quora.com/(.+?)/answer/%s" % name)
+		m = e.match(l)
+		if m :
+			response = urllib2.urlopen(l)
+			html = response.read()
+			
+			return """
+			
+			%s
+			 
+			""" % html
+		else :
+			return l
 	
 	def analyze(self,data) : 
 		xs = [self.analyze_line(l) for l in data.split("\n")]
