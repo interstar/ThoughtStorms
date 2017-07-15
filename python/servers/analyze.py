@@ -13,7 +13,7 @@ class Analyzer :
 
 	
 	def analyze_line(self,l) :
-		return self.quora(self.youtube(l))
+		return self.youtube(l)
 		
 	def youtube(self,l) :
 		e = re.compile(r"https://www.youtube.com/watch\?v=(\S+)")
@@ -24,25 +24,6 @@ class Analyzer :
 id : %s
 >] """ % m.group(1)
 		else : 
-			return l
-
-		
-	def quora(self,l) :
-		print "in quora"
-		print l
-		name = "Phil-Jones"
-		e = re.compile(r"https://www.quora.com/(.+?)/answer/%s" % name)
-		m = e.match(l)
-		if m :
-			response = urllib2.urlopen(l)
-			html = response.read()
-			
-			return """
-			
-			%s
-			 
-			""" % html
-		else :
 			return l
 	
 	def analyze(self,data) : 
