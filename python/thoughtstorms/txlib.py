@@ -19,7 +19,7 @@ class LinkFixer :
 				url = self.sister_sites[site_id].strip("/")
 				return """<a href="%s/%s">%s:%s</a>""" % (url,page_name,site_id,page_name)
 			except Exception, e :
-				return "** | Error in SisterSite link ... seems like %s is not recognised. %s %s"  % (site_id,e,sister_sites)
+				return "** | Error in SisterSite link ... seems like %s is not recognised. %s %s"  % (site_id,e,self.sister_sites)
 		return ss
 
 	def sister_line(self,s) :
