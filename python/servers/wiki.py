@@ -97,6 +97,11 @@ def root() :
 def css(filepath):
     return static_file(filepath, root=wiki.static_root+"/css")
 
+
+@get("/static/images/<filepath:re:.*\.jpg>")
+def css(filepath):
+    return static_file(filepath, root=wiki.static_root+"/images")
+
     
 ## Actions
 @route('/view/<pname>')
