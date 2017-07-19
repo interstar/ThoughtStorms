@@ -13,7 +13,7 @@ class Analyzer :
 
 	
 	def analyze_line(self,l) :
-		return self.youtube(l)
+		return self.youtube(self.soundcloud(l))
 		
 	def youtube(self,l) :
 		e = re.compile(r"https://www.youtube.com/watch\?v=(\S+)")
@@ -24,6 +24,15 @@ class Analyzer :
 id : %s
 >] """ % m.group(1)
 		else : 
+			return l
+			
+	def soundcloud(self,l) :
+		e = re.compiler(r"https://soundcloud.com/(\S+)/(\S*)")
+		m = e.match(l)
+		if m :
+			return """
+		"""
+		else :
 			return l
 	
 	def analyze(self,data) : 
