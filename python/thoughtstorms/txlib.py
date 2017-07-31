@@ -1,7 +1,7 @@
 import re, markdown, yaml, urllib2, csv
 
-
 ## Links
+## _____________________________________________________________
 
 class LinkFixer :
 	def __init__(self,site_root,sister_sites) :
@@ -39,6 +39,9 @@ class LinkFixer :
 
 	def link_filters(self,line) :
 		return self.sqr_alt_line(self.sqrwiki_line(self.sister_line(line)))
+		
+## Tables
+## _____________________________________________________________
 
 class DoubleCommaTabler :
 
@@ -69,9 +72,18 @@ class DoubleCommaTabler :
 		
 table_line = DoubleCommaTabler()
 
+## Magic Markers
+## _____________________________________________________________
+
+def magicMarkers(s) :
+	marker = re.compile("(\{=(\S+?)=\})")
+	if marker.search(s) :
+		s = marker.sub(r"",s)
+	return s
+			
 
 def wiki_filters(s,site_root,sister_sites) : 
-	return LinkFixer(site_root,sister_sites).link_filters(table_line(s))
+	return LinkFixer(site_root,sister_sites).link_filters(table_line(magicMarkers(s)))
 
 		
 ## Standard Wikish (the markup of UseMod)
