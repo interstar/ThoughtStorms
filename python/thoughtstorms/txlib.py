@@ -236,6 +236,11 @@ class YouTubeBlock() :
 		data = yaml.load("\n".join(lines))
 		return ["""<div class="youtube-embedded"><iframe width="400" height="271" src="http://www.youtube.com/embed/%s" frameborder="0" allowfullscreen></iframe></div>""" % data["id"]]
 
+class SoundCloudIndividualBlock() :
+	def evaluate(self,lines) :
+		data = yaml.load("\n".join(lines))
+		return [r"""<iframe width="100%" height="450" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/""" + "%s" % data["id"] + """&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false&amp;visual=true"></iframe>"""]
+
 class SoundCloudBlock() :
 	def evaluate(self,lines) :
 		data = yaml.load("\n".join(lines))
@@ -321,6 +326,8 @@ class Block :
 			self.evaluator = YouTubeBlock()
 		elif self.type == "SOUNDCLOUD" :
 			self.evaluator = SoundCloudBlock()
+		elif self.type == "SOUNDCLOUDINDIVIDUAL" :
+			self.evaluator = SoundCloudIndividualBlock()
 		elif self.type == "BANDCAMP" :
 			self.evaluator = BandCampBlock()
 		elif self.type == "AUDIO" :

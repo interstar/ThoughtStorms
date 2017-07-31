@@ -13,7 +13,7 @@ class Analyzer :
 
 	
 	def analyze_line(self,l) :
-		return self.youtube(self.bandcamp(l))
+		return self.soundcloud(self.youtube(self.bandcamp(l)))
 		
 	def youtube(self,l) :
 		e = re.compile(r"https://www.youtube.com/watch\?v=(\S+)")
@@ -27,13 +27,26 @@ id : %s
 			return l
 			
 	def soundcloud(self,l) :
-		e = re.compiler(r"https://soundcloud.com/(\S+)/(\S*)")
-		m = e.match(l)
+		e1 = re.compile(r"""<iframe (.*) src="https://w.soundcloud.com/player/(.+)url=https%3A//api.soundcloud.com/tracks/([0-9]+)&amp(.*)></iframe>""")
+		m = e1.match(l)
 		if m :
 			return """
-		"""
+[<SOUNDCLOUDINDIVIDUAL
+id: %s
+>]""" % m.group(3)
+		e2 = re.compile(r"""<iframe (.*) src="https://w.soundcloud.com/player/(.+)url=https%3A//api.soundcloud.com/playlists/([0-9]+)&amp;(.*)></iframe>""")
+		m = e2.match(l)
+		if m :
+			return """
+[<SOUNDCLOUD
+id: %s
+>]
+""" % m.group(3)
+		if "soundcloud.com" in l :
+			return """ Looks like you're analyzing soundcloud. Try grabbing the share / embed link and analyzing that"""
 		else :
 			return l
+
 
 	def bandcamp(self,l) : 
 		e = re.compile(r"""<iframe style="(.*)" src="https://bandcamp.com/EmbeddedPlayer/album=([0-9]+)/(.*)transparent=true/" seamless><a href="(.*)">(.*)</a></iframe>""")
