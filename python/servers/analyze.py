@@ -36,7 +36,7 @@ id : %s
 			return l
 
 	def bandcamp(self,l) : 
-		e = re.compile(r"""<iframe style="border: 0; width: 350px; height: 470px;" src="https://bandcamp.com/EmbeddedPlayer/album=([0-9]+)/(.*)transparent=true/" seamless><a href="(.*)">(.*)</a></iframe>""")
+		e = re.compile(r"""<iframe style="(.*)" src="https://bandcamp.com/EmbeddedPlayer/album=([0-9]+)/(.*)transparent=true/" seamless><a href="(.*)">(.*)</a></iframe>""")
 		m = e.match(l)
 		if m :
 			return """
@@ -44,7 +44,16 @@ id : %s
 id: %s
 url: %s
 description: %s
->]""" % (m.group(1),m.group(3),m.group(4))
+>]""" % (m.group(2),m.group(4),m.group(5))
+		else : 
+			if "bandcamp.com" in l :
+				return """
+Looks like you're trying to embed a Bandcamp album. 
+
+Try going to the Share/Embed option, choosing "Embed this Album", selecting a style and copying the embed tag.
+"""
+			else :
+				return l
 
 
 	def analyze(self,data) : 
