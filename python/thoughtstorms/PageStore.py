@@ -35,6 +35,8 @@ class PageStore :
 	def put(self,pName,body) :
 		raise Exception("This PageStore doesn't allow writing")
 		
+	def append(self,pName,marker,extra) :
+		raise Exception("This PageStore doesn't allow writing. So also doesn't allow appending")
 
 	def delete(self,pname) :
 		raise Exception("This PageStore doesn't allow deleting")
@@ -113,6 +115,32 @@ class WritablePageStore(PageStore) :
 		f.close()
 		if self.recent_changes :
 			self.update_recent_changes(pName)
+			
+	def append(self,pName,marker,extra) :
+		f = open(self.fName(pName)) 
+		page = f.read()
+		if not marker in page :
+			print "Marker %s not found in page %s " % (marker, page)
+			return
+		lines = page.split("\n")
+		before, after = [],[]
+		flag = False
+		for l in lines : 
+			if not flag :				
+				if marker in l :
+					flag = True
+				before = before + [l]
+			else :
+				after = after + [l]
+		if "\n" in extra :
+			extra = extra.split("\n")
+		else :
+			extra = [extra]
+		newpage = before + ["","*Added %s* : " % datetime.date.today()] + extra + [""] + after
+		f.close()
+		
+		self.put(pName,"\n".join(newpage))		
+			 
 
 	def delete(self,pname) :
 		with open(self.fName(pname)) as f :

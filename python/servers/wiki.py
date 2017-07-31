@@ -121,10 +121,24 @@ def editor(pname) :
 	return make_page(pname, make_form(x,"put",pname), wiki)
 
 
+@route('/appendto/<pname>/<marker>/<url:path>')
+def appendor(pname,marker,url) :
+	x = wiki.page_store.get(pname,lambda pname, e : "Extra stuff", lambda pname, e : "Error: %s" % e)	
+	return make_page(pname, make_form("[%s](%s)"%(url,url),"append","%s/%s"%(pname,marker)), wiki)
+
+
 @post('/put/<pname>')
 def poster(pname) :
 	body = request.forms.get("body")
 	wiki.page_store.put(pname,body)
+	redirect('/view/%s'%pname)
+
+
+
+@post('/append/<pname>/<marker>')
+def append(pname,marker) :
+	extra = request.forms.get("body")
+	wiki.page_store.append(pname,marker,extra)
 	redirect('/view/%s'%pname)
 
 
