@@ -50,11 +50,12 @@ class PageStore :
 			
 	def search(self,text) :
 		try  :
-			res = check_output(["grep -i %s %s/*.%s" % (text,self.pages_dir,self.extension)], shell=True)
+			res = check_output(["""grep -i "%s" %s/*.%s""" % (text,self.pages_dir,self.extension)], shell=True)
 		except CalledProcessError, e :
 			if e.returncode == 1 :
 				return "No results"
-		print res
+			else :
+				raise e
 		rs = res.split("\n")
 		def f(l) :
 			r = self.file_name_2_page_name(l.split(":")[0])			
