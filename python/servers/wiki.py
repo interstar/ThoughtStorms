@@ -6,7 +6,7 @@ from bottle import route, run, template, get, post, request, redirect, static_fi
 import bottle, yaml
 
 from thoughtstorms.PageStore import PageStore, WritablePageStore
-from thoughtstorms.txlib import MarkdownThoughtStorms
+from thoughtstorms.txlib import MarkdownThoughtStorms, Environment
 
 from analyze import Analyzer
 
@@ -15,6 +15,7 @@ class TSWiki :
 		self.wikiname = wikiname
 		self.port = port
 		self.chef = MarkdownThoughtStorms()
+		
 		print """Starting Wiki :
 		Type   : %s
 		Port   : %s
@@ -111,8 +112,7 @@ def view(pname) :
 	else :
 		msg = "Page does not exist."
 	x = wiki.page_store.get(pname,lambda pname, e : msg, lambda pname, e : "Error: %s" % e )
-	ss = wiki.get_sister_sites()
-	body = wiki.chef.cook(x,"/view/",ss)
+	body = wiki.chef.cook(x,Environment("/view/",wiki.get_sister_sites()))
 	return make_page(pname, body, wiki)
 
 @route('/edit/<pname>')
@@ -131,8 +131,7 @@ def poster(pname) :
 @get('/embed/<pname>')
 def embed(pname) :
 	x = wiki.page_store.get(pname,lambda pname, e : "New Page %s\n=====" % pname, lambda pname, e : "Error: %s" % e)	
-	ss = wiki.get_sister_sites()
-	return wiki.chef.cook(x,"",ss)
+	return wiki.chef.cook(x,Environment("",wiki.get_sister_sites()))
 	
 
 @get('/delete/<pname>')
@@ -154,9 +153,8 @@ wiki.service_names = [["services","/service/services","List of all Services on t
 @get('/service/services')
 def get_services() :	
 	services = ["""**%s**,, Example [%s](%s),, [DataPage](/sview/%s),, %s""" % (s,expl,expl,s,desc) for s,expl,desc in wiki.service_names]
-
-	ss = wiki.get_sister_sites()
-	x = wiki.chef.cook("\n" + j(services),"/view/",ss)
+	
+	x = wiki.chef.cook("\n" + j(services),Environment("/view/",wiki.get_sister_sites()))
 	return make_page("Services",x,wiki)
 	
 @get('/service/raw/<pname>')
@@ -181,15 +179,14 @@ def get_search(text) :
 		out = "This PageStore is not searchable"
 	else : 
 		out = wiki.page_store.search(text)
-	ss = wiki.get_sister_sites()
-	out = wiki.chef.cook(out,"/view/",ss)
+		
+	out = wiki.chef.cook(out,Environment("/view/",wiki.get_sister_sites()))
 	return make_page("Search Result for %s" % text,  out , wiki, False)
 
 @get('/service/all')
 def get_all() :
 	out = "\n".join(["* [[%s]]" % p for p in wiki.page_store.all_pages()])
-	ss = wiki.get_sister_sites()
-	out = wiki.chef.cook(out,"/view/",ss)
+	out = wiki.chef.cook(out,Environment("/view/",wiki.get_sister_sites()))
 	return make_page("All Pages", out, wiki, False)
 	
 @get('/service/all_raw')
