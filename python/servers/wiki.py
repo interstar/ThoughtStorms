@@ -84,7 +84,7 @@ def make_page(page_name, body, wiki,normal=True) :
 		edit_path_name = "edit"
 	else: 
 		edit_path_name = "sedit"
-	return template('page',pageName=page_name,wikiname=wiki.wikiname, normal_page=normal,editPathName=edit_path_name, pageStore=wiki.page_store,body=body)
+	return template('page',pageName=page_name,wikiname=wiki.wikiname, normal_page=normal,editPathName=edit_path_name, pageStore=wiki.page_store,body=body,port=wiki.port)
 
 ## ________________________________________________________________________
 ## Routing
