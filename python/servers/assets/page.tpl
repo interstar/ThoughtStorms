@@ -13,12 +13,11 @@
 		<a href="/view/RecentChanges">RecentChanges</a>
 
 		% if pageStore.is_writable() :
-		 | <a href="/{{editPathName}}/{{pageName}}">Edit this Page</a>
+		| <a href="/{{editPathName}}/{{pageName}}">Edit this Page</a>
+		| <a href="javascript:(function(){%20%20%20%20%20%20%20%20/*%20Statements%20returning%20a%20non-undefined%20type,%20e.g.%20assignments%20*/%20%20%20%20%20%20%20%20%20%20%20%20window.location='http://localhost:8090/appendto/{{pageName}}/LinkBin/'+document.URL;%20%20%20%20%20%20%20%20})();">TS#{{pageName}}</a>
 		% end
 		|
 		<a href="/service/services">Services</a>
-		|
-		<a href="javascript:(function(){%20%20%20%20%20%20%20%20/*%20Statements%20returning%20a%20non-undefined%20type,%20e.g.%20assignments%20*/%20%20%20%20%20%20%20%20%20%20%20%20window.location='http://localhost:8090/appendto/{{pageName}}/LinkBin/'+document.URL;%20%20%20%20%20%20%20%20})();">TS#{{pageName}}</a>
 		|
 		<a href="/service/analyze">Analysis</a>
 		% if pageStore.is_writable() :
