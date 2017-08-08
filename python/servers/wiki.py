@@ -163,12 +163,33 @@ wiki.service_names = [["services","/service/services","List of all Services on t
 					  ["search","/service/search/HelloWorld","Crude grep for text in pages"]
 					  ]
 
-
+def service_line(s_name,example,desc) :
+	l = " 	**%s**,, " % s_name
+	if example :
+		l = l + "Example [%s](%s),, " % (example,example)
+	else :
+		l = l + "No Example,, "
+	l = l + "[DataPage](/sview/%s),, %s" % (s_name, desc)
+	return l
+	
 @get('/service/services')
 def get_services() :	
-	services = ["""**%s**,, Example [%s](%s),, [DataPage](/sview/%s),, %s""" % (s,expl,expl,s,desc) for s,expl,desc in wiki.service_names]
+	services = [service_line(s,expl,desc) for s,expl,desc in wiki.service_names]
+
+	bookmarklets = ["""<a href="javascript:(function(){%20%20%20%20%20%20%20%20/*%20Statements%20returning%20a%20non-undefined%20type,%20e.g.%20assignments%20*/%20%20%20%20%20%20%20%20%20%20%20%20window.location='http://localhost:{{port}}/appendto/LinkBin/LinkBin/'+document.URL;%20%20%20%20%20%20%20%20})();">""" + "Append to %s LinkBin</a></div>" % wiki.wikiname]
+
+	all_page = """
+
+### Services
 	
-	x = wiki.chef.cook("\n" + j(services),Environment("/view/",wiki.get_sister_sites()))
+%s
+
+### Bookmarklets
+
+%s	
+""" % (j(services), j(bookmarklets))
+
+	x = wiki.chef.cook(all_page,Environment("/view/",wiki.get_sister_sites()))
 	return make_page("Services",x,wiki)
 	
 @get('/service/raw/<pname>')

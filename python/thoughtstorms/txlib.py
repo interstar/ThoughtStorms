@@ -8,7 +8,7 @@ import re, markdown, yaml, urllib2, csv
 class Environment :
 	def __init__(self,sr,ss) :
 		self.sister_sites = ss
-		self.site_root = sr
+		self.site_root = sr	
 
 ## Links
 ## _____________________________________________________________
@@ -54,10 +54,11 @@ class LinkFixer :
 
 class DoubleCommaTabler :
 
-	def __init__(self) :
+	def __init__(self,env) :
 		self.tableMode = False
 		self.newTable = False
 		self.doubleComma = re.compile("(,,)")
+		self.env = env
 		
 	def __call__(self,l) :
 		if not self.tableMode :
@@ -79,7 +80,6 @@ class DoubleCommaTabler :
 			
 		return l
 		
-table_line = DoubleCommaTabler()
 
 ## Magic Markers
 ## _____________________________________________________________
@@ -91,8 +91,6 @@ def magicMarkers(s) :
 	return s
 			
 
-def wiki_filters(s,env) : 
-	return LinkFixer(env).link_filters(table_line(magicMarkers(s)))
 
 		
 ## Standard Wikish (the markup of UseMod)
@@ -387,6 +385,8 @@ class BlockServices :
 				count = count + 1		
 		return new_lines
 
+		
+
 class MarkdownThoughtStorms :
 	"""ThoughtStorms Wiki has been converted to Markdown for basic formatting.
 	We keep some extra formatting. 
@@ -394,10 +394,24 @@ class MarkdownThoughtStorms :
 	social_filters handles the social media embedding we use.
 	Finally we do markdown.
 	"""
+
+	def md(self,p) :
+		p = p.replace("<","-=OPEN=-")
+		p = p.replace(">","-=CLOSE=-")
+		p = markdown.markdown(p)
+		p = p.replace("-=CLOSE=-",">")
+		p = p.replace("-=OPEN=-","<")
+		return p		
+
+	def wiki_filters(self,s) : 
+		return LinkFixer(self.env).link_filters(magicMarkers(self.table_line(s)))
+
 	def cook(self,p,env) :
+		self.env = env
+		self.table_line = DoubleCommaTabler(env)
 		lines = p.split("\n")
 		lines = BlockServices().handle_lines(lines,env)
-		lines = (wiki_filters(l,env) for l in lines)
-		page = markdown.markdown("\n".join((l.strip() for l in lines)))                
+		lines = [self.wiki_filters(l) for l in lines]
+		page = self.md("\n".join((l.strip() for l in lines)))                
 		return page
 
