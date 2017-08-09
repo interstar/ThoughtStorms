@@ -176,7 +176,7 @@ def service_line(s_name,example,desc) :
 def get_services() :	
 	services = [service_line(s,expl,desc) for s,expl,desc in wiki.service_names]
 
-	bookmarklets = ["""<a href="javascript:(function(){%20%20%20%20%20%20%20%20/*%20Statements%20returning%20a%20non-undefined%20type,%20e.g.%20assignments%20*/%20%20%20%20%20%20%20%20%20%20%20%20window.location='http://localhost:{{port}}/appendto/LinkBin/LinkBin/'+document.URL;%20%20%20%20%20%20%20%20})();">""" + "Append to %s LinkBin</a></div>" % wiki.wikiname]
+	bookmarklets = ["""<a href="javascript:(function(){window.location='http://localhost:"""+wiki.port+"""/appendto/LinkBin/LinkBin/'+document.URL;})();">""" + "Append to %s LinkBin</a></div>" % wiki.wikiname]
 
 	all_page = """
 
