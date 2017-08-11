@@ -121,10 +121,24 @@ def editor(pname) :
 	return make_page(pname, make_form(x,"put",pname), wiki)
 
 
-@route('/appendto/<pname>/<marker>/<url:path>')
-def appendor(pname,marker,url) :
+@route('/appendto/<pname>/<marker>/<url:re:.+>')
+def append_to(pname,marker,url) :
+	import inspect
+	
+	def find(request) :
+		for y in inspect.getmembers(request) :
+			if y[0] == "query_string" :
+				yield y
+
+	url = url + "?" 
+	for y in find(request) :
+		url=url+y[1]
+		
 	x = wiki.page_store.get(pname,lambda pname, e : "Extra stuff", lambda pname, e : "Error: %s" % e)	
-	return make_page(pname, make_form("[%s](%s)"%(url,url),"append","%s/%s"%(pname,marker)), wiki)
+
+	insert = """[%s](%s)"""%(url,url)
+	analyze_form = """<form method="post" action="/service/analyze_it"><input type="hidden" name="data" value="%s"><input type="submit" value="Analyze it"></form>""" % url
+	return make_page(pname, analyze_form + "<br/>" + make_form(insert,"append","%s/%s"%(pname,marker)), wiki)
 
 
 @post('/put/<pname>')
@@ -176,7 +190,7 @@ def service_line(s_name,example,desc) :
 def get_services() :	
 	services = [service_line(s,expl,desc) for s,expl,desc in wiki.service_names]
 
-	bookmarklets = ["""<a href="javascript:(function(){%20%20%20%20%20%20%20%20/*%20Statements%20returning%20a%20non-undefined%20type,%20e.g.%20assignments%20*/%20%20%20%20%20%20%20%20%20%20%20%20window.location='http://localhost:{{port}}/appendto/LinkBin/LinkBin/'+document.URL;%20%20%20%20%20%20%20%20})();">""" + "Append to %s LinkBin</a></div>" % wiki.wikiname]
+	bookmarklets = ["""<a href="javascript:(function(){window.location='http://localhost:"""+wiki.port+"""/appendto/LinkBin/LinkBin/'+document.URL;})();">""" + "Append to %s LinkBin</a></div>" % wiki.wikiname]
 
 	all_page = """
 
@@ -251,5 +265,5 @@ def poster(sname) :
 	
 
 if __name__ == '__main__' :
-	run(host='0.0.0.0', port=wiki.port)
+	run(host='0.0.0.0', port=wiki.port,debug=True)
 
