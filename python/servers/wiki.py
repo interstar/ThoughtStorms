@@ -134,9 +134,11 @@ def append_to(pname,marker,url) :
 	for y in find(request) :
 		url=url+y[1]
 		
-	print url
 	x = wiki.page_store.get(pname,lambda pname, e : "Extra stuff", lambda pname, e : "Error: %s" % e)	
-	return make_page(pname, make_form("[%s](%s)"%(url,url),"append","%s/%s"%(pname,marker)), wiki)
+
+	insert = """[%s](%s)"""%(url,url)
+	analyze_form = """<form method="post" action="/service/analyze_it"><input type="hidden" name="data" value="%s"><input type="submit" value="Analyze it"></form>""" % url
+	return make_page(pname, analyze_form + "<br/>" + make_form(insert,"append","%s/%s"%(pname,marker)), wiki)
 
 
 @post('/put/<pname>')
