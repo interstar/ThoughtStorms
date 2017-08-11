@@ -121,8 +121,20 @@ def editor(pname) :
 	return make_page(pname, make_form(x,"put",pname), wiki)
 
 
-@route('/appendto/<pname>/<marker>/<url:path>')
-def appendor(pname,marker,url) :
+@route('/appendto/<pname>/<marker>/<url:re:.+>')
+def append_to(pname,marker,url) :
+	import inspect
+	
+	def find(request) :
+		for y in inspect.getmembers(request) :
+			if y[0] == "query_string" :
+				yield y
+
+	url = url + "?" 
+	for y in find(request) :
+		url=url+y[1]
+		
+	print url
 	x = wiki.page_store.get(pname,lambda pname, e : "Extra stuff", lambda pname, e : "Error: %s" % e)	
 	return make_page(pname, make_form("[%s](%s)"%(url,url),"append","%s/%s"%(pname,marker)), wiki)
 
@@ -251,5 +263,5 @@ def poster(sname) :
 	
 
 if __name__ == '__main__' :
-	run(host='0.0.0.0', port=wiki.port)
+	run(host='0.0.0.0', port=wiki.port,debug=True)
 
