@@ -8,7 +8,7 @@ import re, markdown, yaml, urllib2, csv
 class Environment :
 	def __init__(self,sr,ss) :
 		self.sister_sites = ss
-		self.site_root = sr
+		self.site_root = sr	
 
 ## Links
 ## _____________________________________________________________
@@ -264,12 +264,19 @@ Your browser does not support the audio element.
 class LocalFileBlock() :
 	def evaluate(self,lines) :
 		data = yaml.load("\n".join(lines))
+		flt = lambda x : True
 		try :
 			f = open(data["path"])
 			ext_lines = f.readlines()
+			f.close()			
+			if data.has_key("filter") :
+				r = re.compile(data["filter"])			
+				flt = lambda x : r.search(x)
 		except Exception, e :
-			ext_lines = ["Error, can't read %s" % data["path"]]
-		return ["<pre>"] + ext_lines + ["</pre>"]
+			ext_lines = ["""Error, can't read %s. 
+			
+More specifically %s""" % (data["path"],e)]
+		return ["<pre>"] + [x.decode('utf-8') for x in ext_lines if flt(x)] + ["</pre>"]
 
 class SimpleRawTranscludeBlock() :
 	def __init__(self,env) :
