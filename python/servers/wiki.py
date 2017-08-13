@@ -130,10 +130,14 @@ def append_to(pname,marker,url) :
 			if y[0] == "query_string" :
 				yield y
 
-	url = url + "?" 
-	for y in find(request) :
-		url=url+y[1]
-		
+	ys = [y[1] for y in find(request)]
+	print ys
+	if len(ys) > 0 and ys[0] != "" :
+		url = url + "?"	
+		for y in ys :
+			url=url+y
+	
+	print url
 	x = wiki.page_store.get(pname,lambda pname, e : "Extra stuff", lambda pname, e : "Error: %s" % e)	
 
 	insert = """[%s](%s)"""%(url,url)
