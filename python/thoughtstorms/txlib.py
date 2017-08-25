@@ -264,19 +264,22 @@ Your browser does not support the audio element.
 class LocalFileBlock() :
 	def evaluate(self,lines) :
 		data = yaml.load("\n".join(lines))
-		flt = lambda x : True
 		try :
 			f = open(data["path"])
 			ext_lines = f.readlines()
 			f.close()			
-			if data.has_key("filter") :
-				r = re.compile(data["filter"])			
-				flt = lambda x : r.search(x)
 		except Exception, e :
-			ext_lines = ["""Error, can't read %s. 
+			return ["<pre>"] + ["""Error, can't read %s. 
 			
-More specifically %s""" % (data["path"],e)]
-		return ["<pre>"] + [x.decode('utf-8') for x in ext_lines if flt(x)] + ["</pre>"]
+More specifically %s""" % (data["path"],e)] + ["</pre>"]
+
+ 		if data.has_key("filter") :
+			r = re.compile(data["filter"])
+			flt = lambda x : r.search(x)
+			outlines = (x for x in ext_lines if flt(x))
+		else :
+			outlines = ext_lines
+		return ["<pre>"] + [x.decode('utf-8') for x in outlines] + ["</pre>"]
 
 class SimpleRawTranscludeBlock() :
 	def __init__(self,env) :
