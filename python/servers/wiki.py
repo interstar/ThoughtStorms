@@ -5,6 +5,8 @@ from bottle import route, run, template, get, post, request, redirect, static_fi
 
 import bottle, yaml
 
+import difflib
+
 from thoughtstorms.PageStore import PageStore, WritablePageStore
 from thoughtstorms.txlib import MarkdownThoughtStorms, Environment
 
@@ -173,9 +175,11 @@ def delete(pname) :
 
 # Services
 wiki.service_names = [["services","/service/services","List of all Services on this wiki"], 
+					  ["recentchanges","/service/recentchanges","RecentChanges of this wiki"],
 					  ["all","/service/all","List of all Pages in this wiki"],
 					  ["all raw","/service/all_raw","List of all Pages in raw text"],
-					  ["raw","/service/raw/HelloWorld","Raw version of a page"],
+					  ["raw","/service/raw/HelloWorld","Raw version of a page"],					  
+					  ["changed","/service/changed/HelloWorld","Diff between current and most recent old version of a page"],
 					  ["analyze","/service/analyze","Analyze a link to derive embeddable form and other useful data"],
 					  ["sister_sites","","Sister sites are defined on the data-page, and used in double-square links"],
 					  ["search","/service/search/HelloWorld","Crude grep for text in pages"]
@@ -215,6 +219,73 @@ def get_raw(pname) :
 	response.content_type="text/text"
 	return wiki.page_store.get(pname,lambda pname, e : "Page does not exist. Try <a href='/edit/%s'>editing</a>"%pname, lambda pname, e : "Error: %s" % e )
 	
+@get('/service/recentchanges')
+def recentchanges() :
+	def layout(cs) :
+		if len(cs) > 1 :
+			return """<tr><td><a href="/view/%s">%s</a></td><td>%s</td>
+					  <td><a href="/service/additions/%s">additions</a></td>
+					  <td><a href="/service/changed/%s">diff</td>
+					  </tr>""" % (cs[0],cs[0],cs[1],cs[0],cs[0])
+		else :
+			return "<!-- Error %s -->" % cs
+		
+	rcs = """<table class="table table-striped table-bordered table-condensed"> 
+<tr><th>Page</th><th>Date</th><th>Additions</th><th>Diff</th></tr>
+%s
+</table>""" % "\n".join((layout(x.split(",")) for x in wiki.page_store.get_recentchanges() ))
+	return make_page("RecentChanges",wiki.chef.cook(rcs,Environment("",wiki.get_sister_sites())),wiki)
+
+
+def diff(pname) :
+	new = wiki.page_store.get(pname, lambda pname, e : "Page does not exist.", lambda pname, e : "Error: %s" % e ).split("\n")
+	old = wiki.page_store.get_old(pname, lambda pname, e : "", lambda pname, e : "Error: %s" % e ).split("\n")
+	return difflib.Differ().compare(old,new)
+
+@get('/service/changed/<pname>')
+def changed(pname) :
+	raw = "\n".join(diff(pname))
+	
+	page = """
+
+Recent changes to this page :
+<br/>
+<textarea cols="120" rows="30">
+	
+%s
+
+</textarea>
+""" % raw  
+	return make_page(pname,page,wiki)
+	
+@get('/service/additions/<pname>')
+def additions(pname) :
+	xs = (x[2:] for x in diff(pname) if x[0:2]=="+ ")
+	raw = "\n".join(xs)
+	cooked = wiki.chef.cook(raw,Environment("",wiki.get_sister_sites()))
+	
+	d = """
+Additions to this page :
+<br/>
+Raw
+<br/>
+<textarea cols="120" rows="30">
+
+%s
+
+</textarea>
+<br/>
+Cooked
+<br/>
+<textarea cols="120" rows="30">
+
+%s
+
+</textarea>
+
+""" % (raw,cooked)
+	return make_page(pname,d,wiki)
+
 analyzer = Analyzer()
 
 @get('/service/analyze')

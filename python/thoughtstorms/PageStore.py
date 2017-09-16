@@ -1,15 +1,26 @@
 
 from subprocess import check_output, CalledProcessError
 
-import datetime, re
+import datetime, re, csv
 
 class PageStore :
-	
+		
 	def __init__(self,pages_dir,extension,lc=False) :
 		self.pages_dir = pages_dir
 		self.extension = extension
 		self.lower_case = lc
-	
+		self.init_common()
+
+	def init_common(self) :
+		self.work_dir = "%s/.work" % self.pages_dir
+		self.old_files_dir = "%s/old_pages" % self.work_dir
+		import os
+		try:
+			os.makedirs(self.old_files_dir)
+		except Exception, e :
+			print e
+
+			
 	def __str__(self) :
 		return "(ReadOnly) PageStore with pages at %s" % self.pages_dir
 	
@@ -17,6 +28,12 @@ class PageStore :
 		if self.lower_case :
 			pName=pName.lower()			
 		return "%s/%s.%s" % (self.pages_dir,pName,self.extension)
+		
+	def old_fName(self,pName) :
+		if self.lower_case :
+			pName=pName.lower()
+		return "%s/%s.%s" % (self.old_files_dir,pName,self.extension)
+
 		
 	def get(self,pName,no_file_handler,other_error_handler) :
 		file_name = self.fName(pName)
@@ -28,7 +45,18 @@ class PageStore :
 				return no_file_handler(pName,e)
 			else :
 				return other_error_handler(pName,e)
-		
+	
+	def get_old(self,pName,no_file_handler,other_error_handler) :
+		file_name = self.old_fName(pName)
+		try :
+			with open(file_name) as f :
+				return f.read().decode("utf-8")
+		except Exception, e :
+			if "No such file or directory:" in "%s"%e :
+				return no_file_handler(pName,e)
+			else :
+				return other_error_handler(pName,e)
+	
 
 	def is_writable(self) : return False
 	
@@ -78,6 +106,9 @@ class WritablePageStore(PageStore) :
 		self.extension = extension
 		self.lower_case = lc
 		self.recent_changes = recent_changes
+		self.init_common()
+		
+
 
 	def __str__(self) :
 		return "Read/Write PageStore with pages at %s" % self.pages_dir
@@ -108,13 +139,60 @@ class WritablePageStore(PageStore) :
 		f.write("\n".join(ys))
 		f.close()
 		
+	def save_old(self,pName) :
+		try :
+			with open(self.fName(pName)) as old_f :
+				old_body = old_f.read()
+		except Exception, e :
+			if "No such file or directory:" in "%s"%e :
+				old_body = ""
+			else :
+				print e
+				raise e
+		with open(self.old_fName(pName),"w") as old_f :
+			old_f.write(old_body)
+			
+	def recent_changes_name(self) :
+		return "%s/recentchanges.csv" % self.work_dir
+
+
+	def get_recentchanges(self) :
+		try :		
+			rc = open(self.recent_changes_name())
+			return rc.readlines()
+		except Exception, e :
+			if "No such file or directory:" in "%s"%e :
+				return []
+			else :
+				print e
+				raise e
+
+	def new_recent_changes(self,pName) :
+		new =  ["%s, %s" % (pName,datetime.date.today())]
+		xs = new + self.get_recentchanges()
+		seen = set([])
+		ys = []
+		for x in xs :
+			n = x.split(",")[0]
+			if not n in seen :
+				seen.add(n)
+				ys.append(x)
+		
+		rc = open("%s/recentchanges.csv" % self.work_dir,"w")
+		rc.write("\n".join(ys))
+		rc.close()
+
 
 	def put(self,pName,body) :
+		self.save_old(pName)
+							
 		f = open(self.fName(pName),"w")
 		f.write(body)
 		f.close()
-		if self.recent_changes :
+
+		if self.recent_changes :			
 			self.update_recent_changes(pName)
+			self.new_recent_changes(pName)
 			
 	def append(self,pName,marker,extra) :
 		f = open(self.fName(pName)) 

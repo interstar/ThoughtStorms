@@ -324,7 +324,7 @@ class CSVBlock() :
     </table>""" % build]
 		except Exception, e :
 			return ["Error in CSV Include %s " % e]
-	
+
 	
 class Block :
 	def __init__(self,typ,env) :

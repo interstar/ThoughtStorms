@@ -11,7 +11,7 @@
 	<div class="menubar">
 		<a href="/">HelloWorld</a> 
 		|
-		<a href="/view/RecentChanges">RecentChanges</a>
+		<a href="/service/recentchanges">RecentChanges</a>
 
 		% if pageStore.is_writable() :
 		| <a href="/{{editPathName}}/{{pageName}}">Edit this Page</a>
