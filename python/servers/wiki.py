@@ -1,7 +1,7 @@
 
 from sys import argv
 
-from bottle import route, run, template, get, post, request, redirect, static_file, response
+from bottle import route, run, template, get, post, request, redirect, static_file, response, hook
 
 import bottle, yaml
 
@@ -90,6 +90,14 @@ def make_page(page_name, body, wiki,normal=True) :
 
 ## ________________________________________________________________________
 ## Routing
+
+@hook("after_request")
+def enable_cors() :
+	response.headers['Access-Control-Allow-Origin']='*'
+	response.headers['Access-Control-Allow-Methods']='GET, POST, PUT, OPTIONS'
+	response.headers['Access-Control-Allow-Headers']='Origin, Accept, Content-Type'
+
+
 @route('/')
 def root() :
 	redirect('/view/HelloWorld')
