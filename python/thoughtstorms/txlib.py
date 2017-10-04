@@ -8,7 +8,7 @@ import re, markdown, yaml, urllib2, csv
 class Environment :
 	def __init__(self,sr,ss) :
 		self.sister_sites = ss
-		self.site_root = sr	
+		self.site_root = sr
 
 ## Links
 ## _____________________________________________________________
