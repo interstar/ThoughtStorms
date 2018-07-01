@@ -325,7 +325,62 @@ class CSVBlock() :
 		except Exception, e :
 			return ["Error in CSV Include %s " % e]
 
+
 	
+class GalleryBlockX() :
+	def evaluate(self,lines,md_eval=False) :
+		data = yaml.load("\n".join(lines))
+		try :
+			build = """<div class="gallery">"""
+			for k,v in data.iteritems() :
+				build=build + """\n<figure>
+<img src="%s"/>
+<figcaption>%s</figcaption>
+</figure>""" % (v["url"],v["caption"])
+			build=build+"</div>"
+			return [build]
+		except Exception, e : 
+			return ["Error %s" % e]
+			
+
+
+class GalleryBlock() :
+	def evaluate(self,lines,md_eval=False) :
+		data = yaml.load("\n".join(lines))
+		try :
+			build = """<section><div class="container gal-container">
+"""
+			counter=0
+			for k,v in data.iteritems() :
+				build=build+"""
+<div class="col-md-4 col-sm-6 co-xs-12 gal-item">
+      <div class="box">
+        <a href="#" data-toggle="modal" data-target="#%s">
+          <img src="%s" class="img-thumbnail">
+        </a>
+        <div class="modal fade" id="%s" tabindex="-1" role="dialog">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">X</span></button>
+              <div class="modal-body">
+                <img src="%s" class="img-rounded">
+              </div>
+                <div class="col-md-12 description">
+                  <h4>%s</h4>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+""" % (counter,v["url"],counter,v["url"],v["caption"])
+				counter=counter+1
+			build = build+"\n</div></section>"
+			return [build]
+			
+		except Exception, e :
+			return ["Error %s" % e]
+
 class Block :
 	def __init__(self,typ,env) :
 		self.type = typ
@@ -346,6 +401,8 @@ class Block :
 			self.evaluator = SimpleRawTranscludeBlock(env)
 		elif self.type == "CSV" :
 			self.evaluator = CSVBlock()
+		elif self.type == "GALLERY" :
+			self.evaluator = GalleryBlock()
 			
 		else :
 			self.evaluator = UnknownBlock()
@@ -416,12 +473,17 @@ class MarkdownThoughtStorms :
 	def wiki_filters(self,s) : 
 		return LinkFixer(self.env).link_filters(magicMarkers(self.table_line(s)))
 
+	def mystrip(self,s) :
+		if s.strip() == "" : return s.strip()
+		if s.strip()[0] != "*" : return s.strip()
+		return s
+	
 	def cook(self,p,env) :
 		self.env = env
 		self.table_line = DoubleCommaTabler(env)
 		lines = p.split("\n")
 		lines = BlockServices().handle_lines(lines,env)
 		lines = [self.wiki_filters(l) for l in lines]
-		page = self.md("\n".join((l.strip() for l in lines)))                
+		page = self.md("\n".join((self.mystrip(l) for l in lines)))                
 		return page
 
