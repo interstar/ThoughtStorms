@@ -8,7 +8,7 @@ This project breaks a number of components used in ThoughtStorms Wiki and associ
 
 ### Components :
 
-* PageStore
-* TSWiki
+* PageStore - a store of "pages" accessible by PageName. With extra functionality.
+* txlib - a library to transform Markdown + extra markup into HTML
 
 

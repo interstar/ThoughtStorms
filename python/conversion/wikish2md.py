@@ -2,9 +2,10 @@
 
 from sys import stdin, stdout, argv
 
-from thoughtstorms.txlib import Wikish2Markdown
+from thoughtstorms.legacy import Wikish2Markdown
 
 chef = Wikish2Markdown()
+
 
 for fName in argv[1:] :
 	print fName
