@@ -1,33 +1,34 @@
 Project ThoughtStorms encompases the software used to run [ThoughtStorms Wiki](http://thoughtstorms.info), various conversion scripts and plugins which have been used to port it to different wiki-engines during its history, and some other tools to manage personal and public information with a wiki-like philosophy.
 
-As of 2017, some of these tools are now redundant and continue in the repository for historical continuity. Others are currently in use and under active development.
+As of 2018, some of these tools are now redundant and continue in the repository for historical continuity. Others are currently in use and under active development.
+
 
 #### Overview
 
 ##### Wiki Software
 
-The new, currently unnamed wiki-engine, is written in Python and lives in a the `python` subdirectory of the Project ThoughtStorms repository.
+The new, currently unnamed wiki-engine, is written in Python.
 
-It is, in turn divided into,
+As of July 2018, we've moved much of the functionality to a library, called "thoughtstorms", which is published on PyPI : [https://pypi.org/project/thoughtstorms/](https://pypi.org/project/thoughtstorms/)
 
- * `python/thoughtstorms` (the libraries used by Project ThoughtStorms)
- * `python/servers` (a wiki server, written using the minimal [Bottle](http://bottlepy.org/docs/dev/) framework, and associated templates and css.
- * `python/conversion` (conversion scripts)
- 
-The current philosphy is that all the useful intelligence ie. classes that understand different formats, and which manage storage of pages etc. are in the `thoughtstorms` subdirectory. The `servers` subdir contains only a minimal UI logic + templates. `conversions` are batch conversion scripts. Both `servers` and `conversions` reference the intelligence int the thoughtstorms directory.
+The code for this libray lives in the `python/thoughtstorms` directory.
+
+The main wiki itself, and associated templates, css etc. lives in the `python/servers` directory. This wiki uses the minimal [Bottle](http://bottlepy.org/docs/dev/) framework.
+
+Some other conversion scripts are in `python/conversion`.
+
 
 
 ##### Running the Wiki
 
-	cd PATH-TO/project-thoughtstorms/ThoughtStorms/python/servers
+First install the dependencies : 
 
-Once in this directory, you need to make sure there's a symbolic link to the `thoughtstorms` directory that contains the libraries. For example, in Linux, type
+    pip install pyyaml, markdown, thoughtstorms
+    
+Then
 
-    ln -s ../thoughtstorms thoughtstorms
-
-This only needs to be done once. Now we're in the right directory, and have the symbolic link, you can type :
-	
-	python wiki.py ThoughtStorms w 8090 PATH-TO-PAGES PATH-TO-SERVICE-PAGES PATH-TO/ThoughtStorms/python/servers/assets
+	cd PATH-TO/THIS-REPO/python/servers	
+	python wiki.py ThoughtStorms w 8090 PATH-TO-PAGES PATH-TO-SERVICE-PAGES PATH-TO/THIS-REPO/python/servers/assets
 
 What are these wiki.py options?
 
@@ -49,16 +50,19 @@ The `typecode` selects for the type of PageStore (and the permissions it implies
 
 Use the conversion scripts in the `conversion` directory eg.
 
-**sfw2flat.py** Converts SFW files to flat files (extracts just the current "story" text). 
 
-    PATH-TO/project-thoughtstorms/ThoughtStorms/python/conversion/sfw2flat.py PATH-TO/pages-in-sfw-format/* 
+ThoughtStorms was, for a time, on the [Smallest Federated Wiki](https://github.com/WardCunningham/Smallest-Federated-Wiki). 
+
+**sfw2flat.py** Converts pages from SFW format to flat files for use in ThoughtStorms Wiki (extracts just the current "story" text). 
+
+    PATH-TO/THIS-REPO/python/conversion/sfw2flat.py PATH-TO/pages-in-sfw-format/* 
 
 Note that this saves files in the local directory where this is run from, but that the script appends .md on the end of the file-names on the assumption that you will be moving pages to Markdown format.
 
 
-**wikish2md.py** Converts text files that have *Wikish* markup to Markdown. 
+**wikish2md.py** Converts text files that have *Wikish* markup to Markdown. (Wikish was a variant of UseMod wiki format used in an early incarnation of ThoughtStorms wiki, and on SdiDesk).
 
-    PATH-TO/project-thoughtstorms/ThoughtStorms/python/conversion/wikish2md.py PATH-TO/pages-in-wikish/* 
+    PATH-TO/THIS-REPO/python/conversion/wikish2md.py PATH-TO/pages-in-wikish/* 
     
 NB: saves files with *same name* as originals, in the local directory where this is run from. Be careful. DON'T run this in the same directory as the original files.
 
