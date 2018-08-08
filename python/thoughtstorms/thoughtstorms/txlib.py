@@ -108,6 +108,12 @@ class UnknownBlock() :
 	def evaluate(self,lines) :
 		return ["Block of type Unknown evaluated\n"] + lines + ["\nBLOCK ENDS"]
 		
+
+class PreBlock() :
+    """Does nothing, passes contents through without changing them"""
+    def evaluate(self,lines) :
+        return lines
+
 class YouTubeBlock() :
 	def evaluate(self,lines) :
 		data = yaml.load("\n".join(lines))
@@ -356,7 +362,7 @@ class MarkdownThoughtStorms :
 		if s.strip() == "" : return s.strip()
 		if s.strip()[0] != "*" : return s.strip()
 		return s
-	
+
 	def cook(self,p,env) :
 		self.env = env
 		self.table_line = DoubleCommaTabler(env)
