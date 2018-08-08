@@ -1,0 +1,7 @@
+bottle==0.12.13
+fsquery
+Markdown==2.6.11
+PyYAML==3.12
+thoughtstorms
+toolz==0.8.2
+
