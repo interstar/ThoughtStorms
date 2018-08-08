@@ -302,18 +302,19 @@ class BlockServices :
 	Provides embeddable blocks within pages. This should become the generic mechanism for all inclusions / transclusions 
 	"""
 	def handle_lines(self,lines,env) :
-		if not reduce(lambda a, b : a or b, [OPEN in l for l in lines],False) : return lines
+		#if not reduce(lambda a, b : a or b, [OPEN in l for l in lines],False) : return lines
 		current_block = None
 		in_block = False
 		count = 0
-		new_lines = []
+
 		for l in lines :
 			if in_block :
 				# In Block
 				if CLOSE in l :
 					in_block = False
 					count = count + 1
-					new_lines = new_lines + current_block.evaluate()
+					for x in current_block.evaluate() :
+					    yield x
 					current_block=None
 					continue
 				elif OPEN in l :
@@ -333,9 +334,8 @@ class BlockServices :
 					count = count + 1
 					continue
 				# here we are not in a block and not starting one
-				new_lines.append(l)
-				count = count + 1		
-		return new_lines
+				yield l
+				count = count + 1
 
 		
 
@@ -368,7 +368,7 @@ class MarkdownThoughtStorms :
 		self.table_line = DoubleCommaTabler(env)
 		lines = p.split("\n")
 		lines = BlockServices().handle_lines(lines,env)
-		lines = [self.wiki_filters(l) for l in lines]
+		lines = (self.wiki_filters(l) for l in lines)
 		page = self.md("\n".join((self.mystrip(l) for l in lines)))                
 		return page
 

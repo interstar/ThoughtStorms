@@ -21,12 +21,23 @@ Goodbye *Cruel* **World**
 
     def test2(self) :
         p = """
+Before
+
 [<YOUTUBE
 id : kc_Jq42Og7Q
 >]
+
+During
+
+[<YOUTUBE
+id : kc_Jq42Og7Q
+>]
+
+
+After
 """
         self.assertEqual(self.chef.cook(p,self.env),
-"""<p><div class="youtube-embedded"><iframe width="400" height="271" src="http://www.youtube.com/embed/kc_Jq42Og7Q" frameborder="0" allowfullscreen></iframe></div></p>""")
+"""<p>Before</p>\n<p><div class="youtube-embedded"><iframe width="400" height="271" src="http://www.youtube.com/embed/kc_Jq42Og7Q" frameborder="0" allowfullscreen></iframe></div></p>\n<p>During</p>\n<p><div class="youtube-embedded"><iframe width="400" height="271" src="http://www.youtube.com/embed/kc_Jq42Og7Q" frameborder="0" allowfullscreen></iframe></div></p>\n<p>After</p>""")
 
 if __name__ == '__main__' :
     unittest.main()
