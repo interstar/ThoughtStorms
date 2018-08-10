@@ -111,8 +111,8 @@ class UnknownBlock() :
 
 class PreBlock() :
     """Does nothing, passes contents through without changing them"""
-    def evaluate(self,lines) :
-        return lines
+    def evaluate(self,lines) :        
+        return ["MARKDOWN_TOGGLE"] + lines + ["MARKDOWN_TOGGLE"]
 
 class YouTubeBlock() :
 	def evaluate(self,lines) :
@@ -270,7 +270,9 @@ class Block :
 	def __init__(self,typ,env) :
 		self.type = typ
 		self.lines = []
-		if self.type == "YOUTUBE" :
+		if self.type == "PRE" :
+		    self.evaluator = PreBlock()
+		elif self.type == "YOUTUBE" :
 			self.evaluator = YouTubeBlock()
 		elif self.type == "SOUNDCLOUD" :
 			self.evaluator = SoundCloudBlock()
@@ -312,7 +314,7 @@ class BlockServices :
 				# In Block
 				if CLOSE in l :
 					in_block = False
-					count = count + 1
+	    				count = count + 1
 					for x in current_block.evaluate() :
 					    yield x
 					current_block=None
@@ -369,6 +371,15 @@ class MarkdownThoughtStorms :
 		lines = p.split("\n")
 		lines = BlockServices().handle_lines(lines,env)
 		lines = (self.wiki_filters(l) for l in lines)
-		page = self.md("\n".join((self.mystrip(l) for l in lines)))                
-		return page
+		page = "\n".join((self.mystrip(l) for l in lines))
+		if "MARKDOWN_TOGGLE" in page :
+		    ps = page.split("\nMARKDOWN_TOGGLE")
+		    for x in range(len(ps)) :
+		        if x % 2 == 0 :
+		            ps[x] = self.md(ps[x])		            
+		        else :
+		            pass
+		    return "\n".join(ps)
+		           
+		return self.md(page) 
 
