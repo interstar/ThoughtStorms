@@ -14,6 +14,7 @@ We're now breaking these components out into a separate library that is availabl
       author_email='interstar@gmail.com',
       license='MIT',
       packages=['thoughtstorms'],
+      install_requires=["Markdown","PyYAML>=3.12"],
       classifiers=['Development Status :: 3 - Alpha',
                    'Intended Audience :: Developers'],
       zip_safe=False)
