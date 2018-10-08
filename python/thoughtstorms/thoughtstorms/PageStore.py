@@ -248,9 +248,12 @@ class WritablePageStore(PageStore) :
             p = p + "\n### LinkBin\n\n"+tag
             self.put(sendpage,p)
 
-
-        r = re.compile("(.+)\s+\[\[SendTo\]\] \[\[(\S+)\]\]")   
+        print "sending to"
+        print link
+        
+        r = re.compile("(.+)\s+\[\[SendTo\]\]\s+\[\[(\S+)\]\]")   
         m = r.search(link)
+        
         if m :
             sendpage = m.group(2).strip()
             dr = re.compile("Added ([0-9-]+)")
