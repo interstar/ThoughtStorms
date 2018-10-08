@@ -180,6 +180,12 @@ def embed(pname) :
 def delete(pname) :
 	body = wiki.page_store.delete(pname)
 	return make_page(pname,body,wiki)
+	
+@get('/sendto/')
+def sendto() :
+    body = wiki.page_store.move_first_linkbin_sendto()
+    body = wiki.chef.cook(body,Environment("/view/",wiki.get_sister_sites()))
+    return make_page("LinkBin", body, wiki)
 
 # Services
 wiki.service_names = [["services","/service/services","List of all Services on this wiki"], 
