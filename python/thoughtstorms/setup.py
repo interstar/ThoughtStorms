@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='thoughtstorms',
-      version='0.0.2',
+      version='0.0.3',
       description='Components from Project ThoughtStorms (ThoughtStorms wiki and associated software)',
       long_description="""Project ThoughtStorms is the software behind ThoughtStorms Wiki and some associated other programs.
       

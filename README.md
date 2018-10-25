@@ -21,9 +21,15 @@ Some other conversion scripts are in `python/conversion`.
 
 ##### Running the Wiki
 
-First install the dependencies : 
+We are now using [pipenv](https://github.com/pypa/pipenv) which should handle our dependencies. If you don't want to use pipenv you'll need to install the following :
+ 
+    pip install bottle, pyyaml, markdown, thoughtstorms
+    
+Or with pipenv, go to the `python/servers` directory and :
 
-    pip install pyyaml, markdown, thoughtstorms
+	cd PATH-TO/THIS-REPO/python/servers	
+    pipenv install
+    pipenv shell
     
 Then
 
