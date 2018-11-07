@@ -1,9 +1,12 @@
-
 import sys
 from fsquery import FSQuery
 from thoughtstorms.PageStore import WritablePageStore
 import re
 
+# NOTE :: this functionality is now built into TSWiki / the PageStore itself. There should be very little reason to use this 
+# standalone script except for handling legacy data.
+
+# 
 # A quick and dirty script to move the next "[[SendTo]]" item from the LinkBin page to a local linkbin on the appropriate page.
 # Items in the linkbin need to have the format
 #
