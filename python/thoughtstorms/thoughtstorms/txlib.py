@@ -68,14 +68,17 @@ class DoubleCommaTabler :
         
 		if self.tableMode :
 			if not self.doubleComma.findall(l) :
-				l = l + "\n</table>"
+				l = l + "\n</tbody>\n</table>"
 				self.tableMode = False
 			else :
 				l = self.doubleComma.sub("</td><td>",l)
 				l = "<tr><td>"+l+"</td></tr>"
 
 		if self.newTable :
-			l = "<table border=1px;>\n" + l
+			l = """<table>
+  <tbody>
+""" + l
+			
 			self.newTable = False
 			
 		return l
