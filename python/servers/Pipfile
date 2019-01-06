@@ -6,7 +6,7 @@ name = "pypi"
 [dev-packages]
 
 [packages]
-pyyaml = "*"
+pyyaml = ">=4.2b1"
 markdown = "*"
 thoughtstorms = "==0.0.3"
 bottle = "*"
