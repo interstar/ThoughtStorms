@@ -32,7 +32,8 @@
 
 /* Main */
 body {
-	font-family: Inconsolata;
+	/*font-family: Inconsolata;*/
+        font-family: Raleway;
 	margin: 0;
 	width:100%;
 } 
@@ -103,3 +104,37 @@ blockquote {
   background-color: #eeeeff;
   padding:10px;
 }
+
+
+
+/* Code Styles */
+pre p {
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+
+code p {
+
+border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+   margin: 1em 0;
+   padding: 12px;
+
+  font-family: Inconsolata;
+  font-size: 18px;
+
+  background-color: #eeeefe;
+  color: #333333;
+}
+
+#codeStyler {
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  margin: 1em 0;
+}
+
+
