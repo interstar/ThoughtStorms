@@ -1,0 +1,12 @@
+version: '3'
+services:
+    wiki:
+        build: 
+            context: .
+        ports:
+            - "80:8000"
+        volumes:
+            - ./pages:/var/www/pages
+            - ./service_pages:/var/www/service_pages
+            - ./assets:/var/www/assets 
+
