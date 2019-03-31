@@ -1,5 +1,5 @@
 
-import re, urllib2
+import re, urllib.request, urllib.error, urllib.parse
 	
 class Analyzer :
 	def make_form(self) :

@@ -18,19 +18,19 @@ class TSWiki :
 		self.port = port
 		self.chef = MarkdownThoughtStorms()
 		
-		print """Starting Wiki :
+		print("""Starting Wiki :
 		Type   : %s
 		Port   : %s
 		Pages  : %s
-		Assets : %s """ % (typecode,port,pages_dir,assets_dir)
+		Assets : %s """ % (typecode,port,pages_dir,assets_dir))
 
 		bottle.TEMPLATE_PATH.append( assets_dir )
-		print "Bottle Template Path : %s" % bottle.TEMPLATE_PATH
+		print("Bottle Template Path : %s" % bottle.TEMPLATE_PATH)
 		if assets_dir[-1] != "/" :
 			assets_dir = assets_dir + "/"
 
 		self.static_root = assets_dir + "static/"
-		print "Static Root : %s" % self.static_root
+		print("Static Root : %s" % self.static_root)
 
 		# Setup PageStore
 		if typecode == "w" :
@@ -38,10 +38,10 @@ class TSWiki :
 		else :
 			self.page_store = PageStore(pages_dir,"md",lc=True)
 	
-		print "PageStore : %s" % self.page_store
+		print("PageStore : %s" % self.page_store)
 
 		# Setup Services
-		print "Services Directory : %s" % services_dir
+		print("Services Directory : %s" % services_dir)
 		if typecode == "w" :
 			self.service_page_store = WritablePageStore(services_dir,"yml")
 		else :
@@ -141,13 +141,13 @@ def append_to(pname,marker,url) :
 				yield y
 
 	ys = [y[1] for y in find(request)]
-	print ys
+	print(ys)
 	if len(ys) > 0 and ys[0] != "" :
 		url = url + "?"	
 		for y in ys :
 			url=url+y
 	
-	print url
+	print(url)
 	x = wiki.page_store.get(pname,lambda pname, e : "Extra stuff", lambda pname, e : "Error: %s" % e)	
 
 	insert = """[%s](%s)"""%(url,url)
