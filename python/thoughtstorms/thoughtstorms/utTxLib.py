@@ -5,8 +5,8 @@ import unittest, re
 def assertCollapseNL(test,a,b) :
     a = re.sub("\n+","\n",a)
     b = re.sub("\n+","\n",b)
-    print(a)
-    print(b)
+    #print(a)
+    #print(b)
     test.assertEqual(a,b)
     
 
@@ -22,10 +22,22 @@ class TestMarkdownThoughtStorms(unittest.TestCase) :
 ## Hello Teenage America
 
 Goodbye *Cruel* **World**
+
+----
+
+* another
+* green
+* world
 """
         self.assertEqual(self.chef.cook(p,self.env), 
 """<h2>Hello Teenage America</h2>
-<p>Goodbye <em>Cruel</em> <strong>World</strong></p>""")
+<p>Goodbye <em>Cruel</em> <strong>World</strong></p>
+<hr />
+<ul>
+<li>another</li>
+<li>green</li>
+<li>world</li>
+</ul>""")
 
     def test2(self) :
         p = """
