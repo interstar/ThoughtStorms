@@ -1,5 +1,0 @@
--i https://pypi.org/simple
-bottle==0.12.13
-markdown==3.0.1
-pyyaml==4.2b1
-thoughtstorms==0.0.3
