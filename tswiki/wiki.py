@@ -50,7 +50,7 @@ class TSWiki :
 	def get_sister_sites(self) :
 		sispage = self.service_page_store.get("sister_sites",lambda pname, e : "",lambda pname, e : "Error %s" % e)
 		if sispage != "" :
-			self.sister_sites = yaml.load(sispage)
+			self.sister_sites = yaml.safe_load(sispage)
 		else :
 			self.sister_sites = {}				
 		return self.sister_sites
@@ -310,20 +310,22 @@ def get_analyze() :
 def analyze() :
 	data = request.forms.get("data")
 	return make_page("Analysis",analyzer.analyze(data),wiki, False)
-	
+
+def pageCollectionToMDlist(pc) :
+    return "\n".join(["* [[%s]]" % x for x in pc]) 
+
 @get('/service/search/<text>')
 def get_search(text) :
-	if not wiki.page_store.is_searchable() :
-		out = "This PageStore is not searchable"
-	else : 
-		out = wiki.page_store.search(text)
-		
-	out = wiki.chef.cook(out,Environment("/view/",wiki.get_sister_sites()))
-	return make_page("Search Result for %s" % text,  out , wiki, False)
+    if not wiki.page_store.is_searchable() :
+        out = "This PageStore is not searchable"
+    else : 
+        out = pageCollectionToMDlist(wiki.page_store.search(text))
+    out = wiki.chef.cook(out,Environment("/view/",wiki.get_sister_sites()))
+    return make_page("Search Result for %s" % text,  out , wiki, False)
 
 @get('/service/all')
 def get_all() :
-	out = "\n".join(["* [[%s]]" % p for p in wiki.page_store.all_pages()])
+	out = pageCollectionToMDlist(wiki.page_store.all_pages())
 	out = wiki.chef.cook(out,Environment("/view/",wiki.get_sister_sites()))
 	return make_page("All Pages", out, wiki, False)
 	

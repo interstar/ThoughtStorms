@@ -1,5 +1,6 @@
 -i https://pypi.org/simple
 bottle==0.12.16
+fsquery==0.2.0
 markdown==3.1
 pyyaml==5.1
-thoughtstorms==0.0.61
+thoughtstorms==0.0.63

@@ -8,8 +8,9 @@ name = "pypi"
 [packages]
 pyyaml = ">=4.2b1"
 markdown = "*"
-thoughtstorms = "==0.0.61"
+thoughtstorms = "==0.0.63"
 bottle = "*"
+fsquery = "==0.2.0"
 
 [requires]
 python_version = "3.6"
