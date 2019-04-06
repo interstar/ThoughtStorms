@@ -1,17 +1,25 @@
-Project ThoughtStorms encompases the software used to run [ThoughtStorms Wiki](http://thoughtstorms.info), various conversion scripts and plugins which have been used to port it to different wiki-engines during its history, and some other tools to manage personal and public information with a wiki-like philosophy.
-
-As of 2018, some of these tools are now redundant and continue in the repository for historical continuity. Others are currently in use and under active development.
-
 
 #### Overview
 
+Project ThoughtStorms encompases the software used to run [ThoughtStorms Wiki](http://thoughtstorms.info), and various historical conversion scripts and plugins which have been used to port it to different wiki-engines during its history, and some other tools to manage personal and public information with a wiki-like philosophy.
+
+As of 2019, many of these tools are now redundant and continue in the repository for historical continuity. They have now been moved to the Others are currently in use and under active development.
+
+
+
+
+
+
 ##### Wiki Software
 
-The new, currently unnamed wiki-engine, is written in Python.
+This repository is now mainly focused on the, currently unnamed, wiki-engine used by ThoughtStorms wiki, which is written in Python.
 
-As of July 2018, we've moved much of the functionality to a library, called "thoughtstorms", which is published on PyPI : [https://pypi.org/project/thoughtstorms/](https://pypi.org/project/thoughtstorms/)
+As of April 2019, we've ported it to Python3. There is no longer any guarantee that it will work with Python2.
 
-The code for this libray lives in the `python/thoughtstorms` directory.
+As of July 2018, we've moved much of the functionality to a library, called "thoughtstorms", which is published on 
+PyPI : [https://pypi.org/project/thoughtstorms/](https://pypi.org/project/thoughtstorms/)
+
+The code for this library now lives in a separate repository : .
 
 The main wiki itself, and associated templates, css etc. lives in the `python/servers` directory. This wiki uses the minimal [Bottle](http://bottlepy.org/docs/dev/) framework.
 
