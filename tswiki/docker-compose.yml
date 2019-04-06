@@ -1,0 +1,14 @@
+version: '3'
+services:
+    wiki:
+        build: 
+            context: .
+        ports:
+            - "8000:80"
+        environment:
+            - WIKINAME="TSWiki"
+        volumes:
+            - ./pages:/var/www/pages
+            - ./service_pages:/var/www/service_pages
+            - ./assets:/var/www/assets 
+
