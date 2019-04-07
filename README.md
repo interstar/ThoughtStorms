@@ -33,9 +33,8 @@ We are now using [pipenv](https://github.com/pypa/pipenv) which should handle ou
  
     pip install bottle, pyyaml, markdown, thoughtstorms, fsquery
     
-Or with pipenv, go to the `python/servers` directory and :
+Or with pipenv, go to the `tswiki` directory and :
 
-	cd PATH-TO/THIS-REPO/tswiki	
     pipenv install
     pipenv shell
     
@@ -43,8 +42,11 @@ Then
 
 	python wiki.py ThoughtStorms w 8000 PATH-TO-PAGES PATH-TO-SERVICE-PAGES assets
 
-Or, with Docker Compose, edit the docker-compose.yml file to 
+Or, with Docker Compose in the `tswiki` directory :
 
+    docker-compose up
+
+(Note that this also tries to use port 8000 for the wiki. If you want to use a different port you'll need to change the `docker-compose-py` file. Also, this expects the pages, service_pages and assets directories to be subdirectories of tswiki. If you want the pages to be stored elsewhere, you'll also have to change the mapping in `docker-compose.py`
 
 What are these wiki.py options?
 
