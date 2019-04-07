@@ -41,8 +41,10 @@ Or with pipenv, go to the `python/servers` directory and :
     
 Then
 
-	cd PATH-TO/THIS-REPO/tswiki	
-	python wiki.py ThoughtStorms w 8090 PATH-TO-PAGES PATH-TO-SERVICE-PAGES assets
+	python wiki.py ThoughtStorms w 8000 PATH-TO-PAGES PATH-TO-SERVICE-PAGES assets
+
+Or, with Docker Compose, edit the docker-compose.yml file to 
+
 
 What are these wiki.py options?
 
