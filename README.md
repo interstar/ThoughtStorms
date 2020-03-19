@@ -1,3 +1,4 @@
+**PLEASE NOTE : Project ThoughtStorms is now deprecated. If you are interested in a Python-based Wiki Engine, it might suit you. But my interest, and ThoughtStorms are moving to a new wiki-engine and project : [CardiganBay](https://github.com/interstar/cardigan-bay)**
 
 #### Overview
 
