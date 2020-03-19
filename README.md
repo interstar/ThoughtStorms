@@ -1,5 +1,7 @@
 **PLEASE NOTE : Project ThoughtStorms is now deprecated. If you are interested in a Python-based Wiki Engine, it might suit you. But my interest, and ThoughtStorms are moving to a new wiki-engine and project : [CardiganBay](https://github.com/interstar/cardigan-bay)**
 
+----
+
 #### Overview
 
 Project ThoughtStorms encompases the software used to run [ThoughtStorms Wiki](http://thoughtstorms.info), and various historical conversion scripts and plugins which have been used to port it to different wiki-engines during its history, and some other tools to manage personal and public information with a wiki-like philosophy.
