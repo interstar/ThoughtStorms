@@ -2,5 +2,5 @@
 bottle==0.12.20
 fsquery==0.2.1
 markdown==3.1
-pyyaml==5.1
+pyyaml==5.4
 thoughtstorms==0.0.63
